@@ -711,9 +711,51 @@ stages:
                   }
                 ]
 
+      - job: load_tests_carts_api_aad
+        dependsOn: [provision, playwright_tests_ui]
+        variables:
+          cartsApiEndpoint: $[ dependencies.provision.outputs['getCartsApiEndpoint.cartsApiEndpoint'] ]
+        steps:
+          - task: AzureLoadTest@1
+            displayName: load test with AAD login (carts API)
+            condition: and(ne(variables['AADUSERNAME'], ''), ne(variables['AADPASSWORD'], ''))
+            inputs:
+              azureSubscription: SERVICEPRINCIPAL
+              # Path of the YAML file. Should be fully qualified path or relative to the default working directory
+              loadtestConfigFile: ./loadtests/contoso-traders-carts-aad.yaml
+              resourceGroup: $(RESOURCE_GROUP_NAME)$(SUFFIX)
+              loadtestResource: $(LOAD_TEST_SERVICE_NAME)$(SUFFIX)
+              env: |
+                [
+                  {
+                    "name": "domain",
+                    "value": "$(cartsApiEndpoint)"
+                  },
+                  {
+                    "name": "protocol",
+                    "value": "https"
+                  },
+                  {
+                    "name": "path",
+                    "value": "v1/ShoppingCart/loadtest"
+                  },
+                  {
+                    "name": "threads_per_engine",
+                    "value": "5"
+                  },
+                  {
+                    "name": "ramp_up_time",
+                    "value": "0"
+                  },
+                  {
+                    "name": "duration_in_sec",
+                    "value": "120"
+                  }
+                ]
+
       - job: playwright_tests_ui
         dependsOn: [provision]
-        container: mcr.microsoft.com/playwright:v1.34.3-jammy
+        container: mcr.microsoft.com/playwright:v1.32.0-focal
         variables:
           APIURLSHOPPINGCART: $[ dependencies.provision.outputs['getCartsApiEndpoint.cartsApiEndpoint'] ]
           APIURL: $[ dependencies.provision.outputs['getProductsApiEndpoint.productsApiEndpoint'] ]
