@@ -766,7 +766,7 @@ stages:
       #         targetPath: src/ContosoTraders.Ui.Website/playwright-report
 
       - job: load_tests_carts_api_aad
-        condition: and(ne(variables['AADUSERNAME'], ''), ne(variables['AADPASSWORD'], ''))
+        condition: and(ne(variables['AADUSERNAME1'], ''), ne(variables['AADPASSWORD'], ''))
         dependsOn: [provision]
         variables:
           cartsApiEndpoint: $[ dependencies.provision.outputs['getCartsApiEndpoint.cartsApiEndpoint'] ]
