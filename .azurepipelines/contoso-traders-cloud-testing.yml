@@ -818,6 +818,10 @@ stages:
                     "value": "120"
                   },
                   {
+                    "name": "contoso_threads",
+                    "value": "5"
+                  },
+                  {
                     "name": "contoso_duration",
                     "value": "120"
                   },
