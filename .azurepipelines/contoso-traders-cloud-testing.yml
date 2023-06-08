@@ -780,7 +780,7 @@ stages:
               loadtestConfigFile: ./loadtests/contoso-traders-carts-aad.yaml
               resourceGroup: $(RESOURCE_GROUP_NAME)$(SUFFIX)
               loadtestResource: $(LOAD_TEST_SERVICE_NAME)$(SUFFIX)
-              secrets: | 
+              secrets: |
                 [
                   {
                     "name": "aad_username",
@@ -831,6 +831,6 @@ stages:
                   },
                   {
                     "name": "email"
-                    "value": ""
+                    "value": "mithun.shanbhag@spektrasystems.com"
                   }
                 ]
