@@ -827,14 +827,14 @@ stages:
                   },
                   {
                     "name": "cartsAPI"
-                    "value": "$(cartsApiEndpoint)"
+                    "value": ""
                   },
                   {
                     "name": "productsAPI"
-                    "value": "$(productsApiEndpoint)"
+                    "value": ""
                   },
                   {
                     "name": "email"
-                    "value": "mithun.shanbhag@spektrasystems.com"
+                    "value": ""
                   }
                 ]
