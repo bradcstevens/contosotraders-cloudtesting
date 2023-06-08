@@ -826,15 +826,15 @@ stages:
                     "value": "120"
                   },
                   {
-                    "name": "cartsAPI"
-                    "value": ""
+                    "name": "cartsAPI",
+                    "value": "https://$(cartsApiEndpoint)"
                   },
                   {
-                    "name": "productsAPI"
-                    "value": ""
+                    "name": "productsAPI",
+                    "value": "https://$(productsApiEndpoint)"
                   },
                   {
-                    "name": "email"
-                    "value": ""
+                    "name": "email",
+                    "value": "mithun.shanbhag@spektrasystems.com"
                   }
                 ]
