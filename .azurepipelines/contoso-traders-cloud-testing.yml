@@ -797,7 +797,7 @@ stages:
                   {
                     "name": "clientId",
                     "value": "f92fe950-ae53-49c2-8a14-5c6030f7526a"
-                  },
+                  }
                 ]
               env: |
                 [
