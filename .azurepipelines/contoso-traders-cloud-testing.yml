@@ -783,13 +783,21 @@ stages:
               secrets: |
                 [
                   {
-                    "name": "aad_username",
+                    "name": "username",
                     "value": "$(AADUSERNAME)"
                   },
                   {
-                    "name": "aad_password",
+                    "name": "password",
                     "value": "$(AADPASSWORD)"
-                  }
+                  },
+                  {
+                    "name": "tenantId",
+                    "value": "common"
+                  },
+                  {
+                    "name": "clientId",
+                    "value": "f92fe950-ae53-49c2-8a14-5c6030f7526a"
+                  },
                 ]
               env: |
                 [
