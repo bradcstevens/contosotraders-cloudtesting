@@ -1,0 +1,11 @@
+testName: contoso-traders-carts-aad
+testPlan: contoso-traders-carts-aad.jmx
+description:
+engineInstances: 1
+testId: contosotradersaad
+splitAllCSVs: False
+configurationFiles:
+  - samsung-phone.jpg
+failureCriteria:
+  - avg(response_time_ms) > 5000
+  - percentage(error) > 20
