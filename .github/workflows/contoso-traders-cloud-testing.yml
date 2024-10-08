@@ -665,3 +665,20 @@ jobs:
           name: playwright-report
           path: src/ContosoTraders.Ui.Website/playwright-report/
           retention-days: 30
+
+  cleanup:
+    name: Cleanup resources on failure
+    runs-on: ubuntu-22.04
+    needs: [provision]  # Adjust this list based on your job dependencies
+    if: ${{ failure() }}
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.SERVICEPRINCIPAL }}
+      - name: Delete Resource Group
+        run: az group delete -n '${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }}' --no-wait
+      - name: Purge Key Vault
+        run: az keyvault purge --name ${{ env.KV_NAME }}${{ vars.SUFFIX }} --location ${{ vars.DEPLOYMENTREGION }} --no-wait
+      - name: Delete Deployment
+        run: az deployment sub delete -n createResourceGroup --no-wait
