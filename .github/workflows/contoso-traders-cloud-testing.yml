@@ -7,40 +7,40 @@ on:
     paths-ignore: ["docs/**", "demo-scripts/**"]
 
 env:
-  ACR_NAME: acrcontosotraderslab
-  AKS_CLUSTER_NAME: aks-contoso-traders
+  ACR_NAME: acrcontosotraders # Checked
+  AKS_CLUSTER_NAME: aks-contoso-traders- # Checked
   AKS_CPU_LIMIT: 250m
-  AKS_DNS_LABEL: contoso-traders-products
+  AKS_DNS_LABEL: contoso-traders-products- # Checked
   AKS_MEMORY_LIMIT: 256Mi
-  AKS_NODES_RESOURCE_GROUP_NAME: rg-contoso-traders-aks-nodes
+  AKS_NODES_RESOURCE_GROUP_NAME: rg-contoso-traders-aks-nodes- # Checked
   AKS_REPLICAS: "1"
-  AKS_SECRET_NAME_ACR_PASSWORD: contoso-traders-acr-password
-  AKS_SECRET_NAME_KV_ENDPOINT: kv-contoso-traders-endpoint
+  AKS_SECRET_NAME_ACR_PASSWORD: contoso-traders-acr-password # Checked
+  AKS_SECRET_NAME_KV_ENDPOINT: kv-contoso-traders-endpoint # Checked
   AKS_SECRET_NAME_MI_CLIENTID: mi-contoso-traders-clientid
-  AZURE_AD_APP_NAME: app-contoso-traders-cloud-testing
-  CARTS_ACA_NAME: aca-contoso-traders-carts
+  AZURE_AD_APP_NAME: app-contoso-traders-cloud-testing- # Checked
+  CARTS_ACA_NAME: aca-contoso-traders-carts- # Checked
   CARTS_ACR_REPOSITORY_NAME: contosotradersapicarts
-  CARTS_INTERNAL_ACA_NAME: aca-contoso-traders-intcarts
-  CDN_PROFILE_NAME: cdn-contoso-traders
-  CHAOS_AKS_EXPERIMENT_NAME: chaos-aks-experiment-contoso-traders
-  KV_NAME: kv-contosotraders
-  LOAD_TEST_SERVICE_NAME: lt-contoso-traders
+  CARTS_INTERNAL_ACA_NAME: aca-contoso-traders-int-carts- # Checked
+  CDN_PROFILE_NAME: cdn-contoso-traders- # Checked
+  CHAOS_AKS_EXPERIMENT_NAME: chaos-aks-experiment-contoso-traders- #Checked
+  KV_NAME: kv-contoso-traders- # Checked
+  LOAD_TEST_SERVICE_NAME: lt-contoso-traders- # Checked
   MSGRAPH_API_ID: 00000003-0000-0000-c000-000000000000
   MSGRAPH_API_PERMISSION_EMAIL: 64a6cdd6-aab1-4aaf-94b8-3cc8405e90d0=Scope
   MSGRAPH_API_PERMISSION_USER_READ: e1fe6dd8-ba31-4d61-89e7-88639da4683d=Scope
   PRODUCTS_ACR_REPOSITORY_NAME: contosotradersapiproducts
   PRODUCTS_DB_NAME: productsdb
-  PRODUCTS_DB_SERVER_NAME: sql-contoso-traders-products
+  PRODUCTS_DB_SERVER_NAME: sql-contoso-traders-products- # Checked
   PRODUCTS_DB_USER_NAME: localadmin
   PRODUCT_DETAILS_CONTAINER_NAME: product-details
   PRODUCT_IMAGES_STORAGE_ACCOUNT_NAME: sacontosotradersimg
   PRODUCT_LIST_CONTAINER_NAME: product-list
-  PRODUCTS_CDN_ENDPOINT_NAME: contoso-traders-images
-  RESOURCE_GROUP_NAME: rg-contoso-traders
+  PRODUCTS_CDN_ENDPOINT_NAME: contoso-traders-images- # Checked
+  RESOURCE_GROUP_NAME: rg-contoso-traders- # Checked
   STORAGE_ACCOUNT_NAME: sacontosotradersimg
-  UI_CDN_ENDPOINT_NAME: cdn-ui2-contoso-traders
+  UI_CDN_ENDPOINT_NAME: cdn-ui2-contoso-traders- # Checked
   UI_STORAGE_ACCOUNT_NAME: sacontosotradersui2
-  USER_ASSIGNED_MANAGED_IDENTITY_NAME: mi-contoso-traders-kv-access
+  USER_ASSIGNED_MANAGED_IDENTITY_NAME: mi-contoso-traders-kv-access- # Checked
 
 jobs:
   provision:
@@ -159,15 +159,15 @@ jobs:
       - name: add service principal to kv access policy
         uses: azure/CLI@v1
         with:
-          inlineScript: az keyvault set-policy -n '${{ env.KV_NAME }}-${{ vars.SUFFIX }}' -g '${{ env.RESOURCE_GROUP_NAME }}-${{ vars.SUFFIX }}' --secret-permissions get list set --object-id $(az ad sp show --id $(az account show --query "user.name" -o tsv) --query "id" -o tsv)
+          inlineScript: az keyvault set-policy -n ${{ env.KV_NAME }}${{ vars.SUFFIX }} -g ${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }} --secret-permissions get list set --object-id $(az ad sp show --id $(az account show --query "user.name" -o tsv) --query "id" -o tsv)
       # The AKS agent pool needs to be assigned the user-assigned managed identity created (which has kv access)
       - name: assign user-assigned managed-identity to aks agentpool
         uses: azure/CLI@v1
         with:
           inlineScript: |
             az vmss identity assign \
-              --identities $(az identity show -g '${{ env.RESOURCE_GROUP_NAME }}-${{ vars.SUFFIX }}' --name '${{ env.USER_ASSIGNED_MANAGED_IDENTITY_NAME }}-${{ vars.SUFFIX }}' --query "id" -o tsv) \
-              --ids $(az vmss list -g '${{ env.AKS_NODES_RESOURCE_GROUP_NAME }}-${{ vars.SUFFIX }}' --query "[0].id" -o tsv) \
+              --identities $(az identity show -g ${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }} --name ${{ env.USER_ASSIGNED_MANAGED_IDENTITY_NAME }}${{ vars.SUFFIX }} --query "id" -o tsv) \
+              --ids $(az vmss list -g ${{ env.AKS_NODES_RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }} --query "[0].id" -o tsv) \
       # Seed the DBs and storage accounts
       - name: seed products db
         uses: azure/sql-action@v2.2
