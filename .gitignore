@@ -4,6 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 auth.json
 .cleanup.sh
+.contoso-traders-cloud-testing.yml.bak
 
 # User-specific files
 *.suo

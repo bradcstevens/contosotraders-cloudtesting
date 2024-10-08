@@ -7,43 +7,11 @@ on:
     paths-ignore: ["docs/**", "demo-scripts/**"]
 
 env:
-  ACR_NAME: acrcontosotraders # Checked
-  AKS_CLUSTER_NAME: aks-contoso-traders- # Checked
-  AKS_CPU_LIMIT: 250m
-  AKS_DNS_LABEL: contoso-traders-products- # Checked
-  AKS_MEMORY_LIMIT: 256Mi
-  AKS_NODES_RESOURCE_GROUP_NAME: rg-contoso-traders-aks-nodes- # Checked
-  AKS_REPLICAS: "1"
-  AKS_SECRET_NAME_ACR_PASSWORD: contoso-traders-acr-password # Checked
-  AKS_SECRET_NAME_KV_ENDPOINT: kv-contoso-traders-endpoint # Checked
-  AKS_SECRET_NAME_MI_CLIENTID: mi-contoso-traders-clientid
-  AZURE_AD_APP_NAME: app-contoso-traders-cloud-testing- # Checked
-  CARTS_ACA_NAME: aca-contoso-traders-carts- # Checked
-  CARTS_ACR_REPOSITORY_NAME: contosotradersapicarts
-  CARTS_INTERNAL_ACA_NAME: aca-contoso-traders-int-carts- # Checked
-  CDN_PROFILE_NAME: cdn-contoso-traders- # Checked
-  CHAOS_AKS_EXPERIMENT_NAME: chaos-aks-experiment-contoso-traders- #Checked
-  KV_NAME: kv-contoso-traders- # Checked
-  LOAD_TEST_SERVICE_NAME: lt-contoso-traders- # Checked
-  MSGRAPH_API_ID: 00000003-0000-0000-c000-000000000000
-  MSGRAPH_API_PERMISSION_EMAIL: 64a6cdd6-aab1-4aaf-94b8-3cc8405e90d0=Scope
-  MSGRAPH_API_PERMISSION_USER_READ: e1fe6dd8-ba31-4d61-89e7-88639da4683d=Scope
-  PRODUCTS_ACR_REPOSITORY_NAME: contosotradersapiproducts
-  PRODUCTS_DB_NAME: productsdb
-  PRODUCTS_DB_SERVER_NAME: sql-contoso-traders-products- # Checked
-  PRODUCTS_DB_USER_NAME: localadmin
-  PRODUCT_DETAILS_CONTAINER_NAME: product-details
-  PRODUCT_IMAGES_STORAGE_ACCOUNT_NAME: sacontosotradersimg
-  PRODUCT_LIST_CONTAINER_NAME: product-list
-  PRODUCTS_CDN_ENDPOINT_NAME: cdn-images-contoso-traders- # Checked
-  RESOURCE_GROUP_NAME: rg-contoso-traders- # Checked
-  STORAGE_ACCOUNT_NAME: sacontosotradersimg
-  UI_CDN_ENDPOINT_NAME: cdn-ui2-contoso-traders- # Checked
-  UI_STORAGE_ACCOUNT_NAME: sacontosotradersui2
-  USER_ASSIGNED_MANAGED_IDENTITY_NAME: mi-contoso-traders-kv-access- # Checked
+  # ... [Your existing environment variables] ...
 
 jobs:
-  provision:
+
+  configure-azure-ad-app:
     runs-on: ubuntu-22.04
     env:
       AADUSERNAME: ${{ secrets.AADUSERNAME }}
@@ -51,12 +19,6 @@ jobs:
     outputs:
       azureAdAppClientId: ${{ steps.get-azureAdAppClientId.outputs.azureAdAppClientId }}
       azureAdAppObjId: ${{ steps.get-azureAdAppObjId.outputs.azureAdAppObjId }}
-      cartsApiEndpoint: ${{ steps.get-cartsApiEndpoint.outputs.cartsApiEndpoint }}
-      productsApiEndpoint: ${{ steps.get-productsApiEndpoint.outputs.productsApiEndpoint }}
-      uiCdnEndpoint: ${{ steps.get-uiCdnEndpoint.outputs.uiCdnEndpoint }}
-    concurrency:
-      group: provision
-      cancel-in-progress: true
     steps:
       - name: checkout code
         uses: actions/checkout@v4
@@ -65,8 +27,6 @@ jobs:
         with:
           creds: ${{ secrets.SERVICEPRINCIPAL }}
       # section #0: optional configuration of the Azure AD app.
-      # create the Azure AD application (and update it if it already exists).
-      # note: This is an idempotent operation.
       - name: create/update azure active directory app
         uses: azure/CLI@v1
         if: ${{ env.AADUSERNAME != '' && env.AADPASSWORD != '' }}
@@ -104,9 +64,6 @@ jobs:
         if: ${{ env.AADUSERNAME != '' && env.AADPASSWORD != '' }}
         with:
           inlineScript: az ad app update --id ${{ steps.get-azureAdAppObjId.outputs.azureAdAppObjId }} --optional-claims "{\"accessToken\":[{\"name\":\"email\",\"essential\":false}]}"
-      # note: requesting MS Graph permissions in Azure AD app unfortunately isn't idempotent.
-      # Even, if you have already requested the permissions, it'll keep adding to the list of requested permissions until you hit limit on max permissions requested.
-      # Details: https://github.com/Azure/azure-cli/issues/24512
       - name: delete any requested Microsoft Graph permissions
         uses: azure/CLI@v1
         if: ${{ env.AADUSERNAME != '' && env.AADPASSWORD != '' }}
@@ -124,14 +81,18 @@ jobs:
               --id ${{ steps.get-azureAdAppObjId.outputs.azureAdAppObjId }} \
               --api ${{ env.MSGRAPH_API_ID }} \
               --api-permissions ${{ env.MSGRAPH_API_PERMISSION_USER_READ }} ${{ env.MSGRAPH_API_PERMISSION_EMAIL }}
-      #
+
+  provision-resources:
+    runs-on: ubuntu-22.04
+    needs: [configure-azure-ad-app]
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+      - name: azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.SERVICEPRINCIPAL }}
       # section #1: provisioning the resources on Azure using bicep templates
-      #
-      # The first step is to create the resource group: `contoso-traders-rg`.
-      # The below step can also be manually executed as follows:
-      # az deployment sub create --location {LOCATION} --template-file .\createResourceGroup.bicep
-      # Note: You can specify any location for `{LOCATION}`. It's the region where the deployment metadata will be stored, and not
-      # where the resource groups will be deployed.
       - name: create resource group
         uses: Azure/arm-deploy@v1
         with:
@@ -139,14 +100,6 @@ jobs:
           region: ${{ vars.DEPLOYMENTREGION }}
           template: ./iac/createResourceGroup.bicep
           parameters: rgName=${{ env.RESOURCE_GROUP_NAME }} suffix=${{ vars.SUFFIX }} rgLocation=${{ vars.DEPLOYMENTREGION }}
-      # Next step is to deploy the Azure resources to the resource group `contoso-traders-rg` created above. The deployed resources
-      # include storage accounts, function apps, app services cosmos db, and service bus etc.
-      # The below step can also be manually executed as follows:
-      # az deployment group create -g contoso-traders-rg --template-file .\createResources.bicep --parameters .\createResources.parameters.json
-      # Note: The `createResources.parameters.json` file contains the parameters for the deployment; specifically the environment name.
-      # You can modify the parameters to customize the deployment.
-      # Note: The bicep template outputs are not shown in the logs. You can extract the outputs as shown here:
-      # https://github.com/Azure/arm-deploy#another-example-on-how-to-use-this-action-to-get-the-output-of-arm-template
       - name: create resources
         uses: Azure/arm-deploy@v1
         with:
@@ -155,20 +108,17 @@ jobs:
           resourceGroupName: ${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }}
           template: ./iac/createResources.bicep
           parameters: ./iac/createResources.parameters.json suffix=${{ vars.SUFFIX }} sqlPassword=${{ secrets.SQLPASSWORD }} deployPrivateEndpoints=${{ vars.DEPLOYPRIVATEENDPOINTS }}
-      # Add the logged-in service principal to the key vault access policy
       - name: add service principal to kv access policy
         uses: azure/CLI@v1
         with:
           inlineScript: az keyvault set-policy -n ${{ env.KV_NAME }}${{ vars.SUFFIX }} -g ${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }} --secret-permissions get list set --object-id $(az ad sp show --id $(az account show --query "user.name" -o tsv) --query "id" -o tsv)
-      # The AKS agent pool needs to be assigned the user-assigned managed identity created (which has kv access)
       - name: assign user-assigned managed-identity to aks agentpool
         uses: azure/CLI@v1
         with:
           inlineScript: |
             az vmss identity assign \
               --identities $(az identity show -g ${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }} --name ${{ env.USER_ASSIGNED_MANAGED_IDENTITY_NAME }}${{ vars.SUFFIX }} --query "id" -o tsv) \
-              --ids $(az vmss list -g ${{ env.AKS_NODES_RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }} --query "[0].id" -o tsv) \
-      # Seed the DBs and storage accounts
+              --ids $(az vmss list -g ${{ env.AKS_NODES_RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }} --query "[0].id" -o tsv)
       - name: seed products db
         uses: azure/sql-action@v2.2
         with:
@@ -186,6 +136,20 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: az cdn endpoint purge --no-wait --content-paths '/*' -n '${{ env.PRODUCTS_CDN_ENDPOINT_NAME }}${{ vars.SUFFIX }}' -g '${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }}' --profile-name '${{ env.CDN_PROFILE_NAME }}${{ vars.SUFFIX }}'
+
+  deploy-carts-api:
+    runs-on: ubuntu-22.04
+    needs: [provision-resources]
+    outputs:
+      cartsApiEndpoint: ${{ steps.get-cartsApiEndpoint.outputs.cartsApiEndpoint }}
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+      - name: azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.SERVICEPRINCIPAL }}
+      # section #2: deploy the carts api
       - name: extract acr password
         uses: azure/CLI@v1
         id: extract-acr-password
@@ -200,14 +164,6 @@ jobs:
           login-server: ${{ env.ACR_NAME }}${{ vars.SUFFIX }}.azurecr.io
           username: ${{ env.ACR_NAME }}${{ vars.SUFFIX }}
           password: ${{ steps.extract-acr-password.outputs.acrPassword }}
-      - name: set aks context
-        uses: azure/aks-set-context@v3
-        with:
-          resource-group: ${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }}
-          cluster-name: ${{ env.AKS_CLUSTER_NAME }}${{ vars.SUFFIX }}
-      #
-      # section #2: deploy the carts api
-      #
       - name: docker build
         run: docker build src -f ./src/ContosoTraders.Api.Carts/Dockerfile -t ${{ env.ACR_NAME }}${{ vars.SUFFIX }}.azurecr.io/${{ env.CARTS_ACR_REPOSITORY_NAME }}:latest -t ${{ env.ACR_NAME }}${{ vars.SUFFIX }}.azurecr.io/${{ env.CARTS_ACR_REPOSITORY_NAME }}:${{ github.sha }}
       - name: docker push (to acr)
@@ -231,20 +187,47 @@ jobs:
         with:
           inlineScript: echo "cartsApiEndpoint"="$(az keyvault secret show --vault-name ${{ env.KV_NAME }}${{ vars.SUFFIX }} --name cartsApiEndpoint --query value -o tsv)" >> $GITHUB_OUTPUT
 
-      #
+  deploy-products-api:
+    runs-on: ubuntu-22.04
+    needs: [provision-resources]
+    outputs:
+      productsApiEndpoint: ${{ steps.get-productsApiEndpoint.outputs.productsApiEndpoint }}
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+      - name: azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.SERVICEPRINCIPAL }}
       # section #3: deploy the products api
-      #
       - name: install helm
         uses: Azure/setup-helm@v3
         id: install-helm
         with:
           version: v3.9.0
+      - name: extract acr password
+        uses: azure/CLI@v1
+        id: extract-acr-password
+        with:
+          inlineScript: |
+            acrPassword=$(az acr credential show -n ${{ env.ACR_NAME }}${{ vars.SUFFIX }} -g ${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }} --query "passwords[0].value" --output tsv)
+            echo "::add-mask::$acrPassword"
+            echo acrPassword=$acrPassword >> $GITHUB_OUTPUT
+      - name: azure container registry login
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.ACR_NAME }}${{ vars.SUFFIX }}.azurecr.io
+          username: ${{ env.ACR_NAME }}${{ vars.SUFFIX }}
+          password: ${{ steps.extract-acr-password.outputs.acrPassword }}
+      - name: set aks context
+        uses: azure/aks-set-context@v3
+        with:
+          resource-group: ${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }}
+          cluster-name: ${{ env.AKS_CLUSTER_NAME }}${{ vars.SUFFIX }}
       - name: docker build
         run: docker build src -f ./src/ContosoTraders.Api.Products/Dockerfile -t ${{ env.ACR_NAME }}${{ vars.SUFFIX }}.azurecr.io/${{ env.PRODUCTS_ACR_REPOSITORY_NAME }}:latest -t ${{ env.ACR_NAME }}${{ vars.SUFFIX }}.azurecr.io/${{ env.PRODUCTS_ACR_REPOSITORY_NAME }}:${{ github.sha }}
       - name: docker push (to acr)
         run: docker push --all-tags ${{ env.ACR_NAME }}${{ vars.SUFFIX }}.azurecr.io/${{ env.PRODUCTS_ACR_REPOSITORY_NAME }}
-      - name: setup kubectl
-        uses: azure/setup-kubectl@v3
       - name: create kubernetes secret (acr password)
         uses: Azure/k8s-create-secret@v4
         with:
@@ -297,7 +280,6 @@ jobs:
           pull-images: false
           manifests: ./src/ContosoTraders.Api.Products/Manifests/Service.yaml
           force: true
-      # setup chaos mesh
       - name: apply namespace manifest (chaos-testing)
         uses: Azure/k8s-deploy@v4
         with:
@@ -310,7 +292,6 @@ jobs:
           ${{ steps.install-helm.outputs.helm-path }} repo add chaos-mesh https://charts.chaos-mesh.org
           ${{ steps.install-helm.outputs.helm-path }} repo update
           ${{ steps.install-helm.outputs.helm-path }} upgrade --install chaos-mesh chaos-mesh/chaos-mesh --namespace=chaos-testing --set chaosDaemon.runtime=containerd --set chaosDaemon.socketPath=/run/containerd/containerd.sock
-      # create the ingress controller
       - name: create ingress controller
         run: |
           az aks get-credentials --resource-group ${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }} --name ${{ env.AKS_CLUSTER_NAME }}${{ vars.SUFFIX }}
@@ -326,14 +307,11 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: az network public-ip update --dns-name ${{ env.AKS_DNS_LABEL }}${{ vars.SUFFIX }} -g ${{ env.AKS_NODES_RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }} -n $(az network public-ip list --query "[?starts_with(name,'kubernetes-') ].name" -o tsv -g ${{ env.AKS_NODES_RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }})
-      # hack: extract the full fqdn / dns label of the aks app's public IP address
       - name: get aks-fqdn
         uses: azure/CLI@v1
         id: get-aks-fqdn
         with:
-          # note: There should be a whitespace between ')' and ']'. More details: https://stackoverflow.com/a/59154958
           inlineScript: echo "aksFqdn"="$(az network public-ip list --query "[?starts_with(name,'kubernetes-') ].dnsSettings.fqdn" -o tsv -g ${{ env.AKS_NODES_RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }})" >> $GITHUB_OUTPUT
-      # install cert-manager
       - name: apply namespace manifest (cert-manager)
         uses: Azure/k8s-deploy@v4
         with:
@@ -397,16 +375,29 @@ jobs:
         with:
           inlineScript: echo "productsApiEndpoint"="$(az keyvault secret show --vault-name ${{ env.KV_NAME }}${{ vars.SUFFIX }} --name productsApiEndpoint --query value -o tsv)" >> $GITHUB_OUTPUT
 
-      #
+  deploy-ui:
+    runs-on: ubuntu-22.04
+    needs: [deploy-carts-api, deploy-products-api, configure-azure-ad-app]
+    outputs:
+      uiCdnEndpoint: ${{ steps.get-uiCdnEndpoint.outputs.uiCdnEndpoint }}
+    env:
+      AADUSERNAME: ${{ secrets.AADUSERNAME }}
+      AADPASSWORD: ${{ secrets.AADPASSWORD }}
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+      - name: azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.SERVICEPRINCIPAL }}
       # section #4: deploy the ui
-      #
       - name: set REACT_APP_APIURLSHOPPINGCART
-        run: echo "REACT_APP_APIURLSHOPPINGCART"="https://${{ steps.get-cartsApiEndpoint.outputs.cartsApiEndpoint }}/v1" >> $GITHUB_ENV
+        run: echo "REACT_APP_APIURLSHOPPINGCART"="https://${{ needs.deploy-carts-api.outputs.cartsApiEndpoint }}/v1" >> $GITHUB_ENV
       - name: set REACT_APP_APIURL
-        run: echo "REACT_APP_APIURL"="https://${{ steps.get-productsApiEndpoint.outputs.productsApiEndpoint }}/v1" >> $GITHUB_ENV
+        run: echo "REACT_APP_APIURL"="https://${{ needs.deploy-products-api.outputs.productsApiEndpoint }}/v1" >> $GITHUB_ENV
       - name: set REACT_APP_B2CCLIENTID
         if: ${{ env.AADUSERNAME != '' && env.AADPASSWORD != '' }}
-        run: echo "REACT_APP_B2CCLIENTID"="${{ steps.get-azureAdAppClientId.outputs.azureAdAppClientId }}" >> $GITHUB_ENV
+        run: echo "REACT_APP_B2CCLIENTID"="${{ needs.configure-azure-ad-app.outputs.azureAdAppClientId }}" >> $GITHUB_ENV
       - uses: actions/setup-node@v3
         with:
           node-version: 18
@@ -440,7 +431,7 @@ jobs:
           inlineScript: |
             az rest \
               --method PATCH \
-              --uri https://graph.microsoft.com/v1.0/applications/${{ steps.get-azureAdAppObjId.outputs.azureAdAppObjId }} \
+              --uri https://graph.microsoft.com/v1.0/applications/${{ needs.configure-azure-ad-app.outputs.azureAdAppObjId }} \
               --headers 'Content-Type=application/json' \
               --body '{"spa":{"redirectUris":["https://localhost:3000/authcallback","http://localhost:3000/authcallback","https://staging.contosotraders.com/authcallback","https://production.contosotraders.com/authcallback","https://cloudtesting.contosotraders.com/authcallback","https://${{ steps.get-uiCdnEndpoint.outputs.uiCdnEndpoint }}/authcallback"]}}'
       - name: display ui cdn endpoint
@@ -451,17 +442,13 @@ jobs:
   cleanup:
     name: Cleanup Resources on Failure
     runs-on: ubuntu-22.04
-    needs: 
-      - provision  # Adjust this list based on your job dependencies
-      # Use failure() in the following if statement to run this job only when the previous job fails
-      # Use false in the following if statement to skip this job when the previous job fails
+    needs: [provision-resources]
     if: ${{ false }}
     steps:
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.SERVICEPRINCIPAL }}
-
       - name: Check and Delete Resource Group if it exists
         run: |
           RESOURCE_GROUP_NAME="${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }}"
@@ -471,7 +458,6 @@ jobs:
           else
             echo "Resource group '$RESOURCE_GROUP_NAME' does not exist. Skipping deletion."
           fi
-
       - name: Check and Purge Key Vault if it exists
         run: |
           KV_NAME="${{ env.KV_NAME }}${{ vars.SUFFIX }}"
@@ -497,7 +483,6 @@ jobs:
               echo "Key Vault '$KV_NAME' does not exist. Skipping purge."
             fi
           fi
-
       - name: Check and Delete Deployment if it exists
         run: |
           DEPLOYMENT_NAME="createResourceGroup"
