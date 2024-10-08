@@ -41,11 +41,11 @@ var acrName = 'acr${prefix}${suffix}'
 // aks cluster
 var aksClusterName = 'aks-${prefixHyphenated}-${suffix}'
 var aksClusterDnsPrefix = 'aks-${prefixHyphenated}-${suffix}'
-var aksClusterNodeResourceGroup = 'rg-aks-nodes-${prefixHyphenated}-${suffix}'
+var aksClusterNodeResourceGroup = 'rg-${prefixHyphenated}-aks-nodes-${suffix}'
 
 // azure container app (carts api)
 var cartsApiAcaName = 'aca-${prefixHyphenated}-carts-${suffix}'
-var cartsApiAcaEnvName = 'aca${prefix}env${suffix}'
+var cartsApiAcaEnvName = 'acaenv${prefix}${suffix}'
 var cartsApiAcaSecretAcrPassword = 'acr-password'
 var cartsApiAcaContainerDetailsName = 'aca-${prefixHyphenated}-carts-${suffix}'
 var cartsApiSettingNameKeyVaultEndpoint = 'KeyVaultEndpoint'
@@ -139,7 +139,7 @@ var imageClassifierStgAccName = 'sa${prefix}ic${suffix}'
 var imageClassifierWebsiteUploadsContainerName = 'website-uploads'
 
 // application insights
-var logAnalyticsWorkspaceName = 'la-${prefixHyphenated}-${suffix}'
+var logAnalyticsWorkspaceName = 'law-${prefixHyphenated}-${suffix}'
 var appInsightsName = 'app-insights-${prefixHyphenated}-${suffix}'
 
 // portal dashboard

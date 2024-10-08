@@ -1,4 +1,4 @@
-name: aks-cost-optimization
+name: AKS Cost Optimization
 
 on:
   workflow_dispatch:
