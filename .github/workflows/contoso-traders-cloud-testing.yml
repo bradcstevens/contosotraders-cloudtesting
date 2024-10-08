@@ -448,6 +448,65 @@ jobs:
         with:
           inlineScript: echo UI CDN endpoint accessible at https://$(az keyvault secret show --vault-name ${{ env.KV_NAME }}${{ vars.SUFFIX }} --name uiCdnEndpoint --query value -o tsv)
 
+  cleanup:
+    name: Cleanup resources on failure
+    runs-on: ubuntu-22.04
+    needs: 
+      - provision  # Adjust this list based on your job dependencies
+    if: ${{ failure() }}
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.SERVICEPRINCIPAL }}
+
+      - name: Check and Delete Resource Group if it exists
+        run: |
+          RESOURCE_GROUP_NAME="${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }}"
+          if az group exists -n "$RESOURCE_GROUP_NAME"; then
+            echo "Resource group '$RESOURCE_GROUP_NAME' exists. Deleting..."
+            az group delete -n "$RESOURCE_GROUP_NAME" -y --no-wait
+          else
+            echo "Resource group '$RESOURCE_GROUP_NAME' does not exist. Skipping deletion."
+          fi
+
+      - name: Check and Purge Key Vault if it exists
+        run: |
+          KV_NAME="${{ env.KV_NAME }}${{ vars.SUFFIX }}"
+          LOCATION="${{ vars.DEPLOYMENTREGION }}"
+          # Check if Key Vault is in soft-deleted state
+          SOFT_DELETED=$(az keyvault list-deleted --query "[?name=='$KV_NAME'].name" -o tsv)
+          if [ "$SOFT_DELETED" == "$KV_NAME" ]; then
+            echo "Key Vault '$KV_NAME' is in soft-deleted state. Purging..."
+            az keyvault purge --name "$KV_NAME" --location "$LOCATION" --no-wait
+          else
+            echo "Key Vault '$KV_NAME' is not in soft-deleted state. Checking if it exists..."
+            # Check if Key Vault exists
+            EXISTS=$(az keyvault list --query "[?name=='$KV_NAME'].name" -o tsv)
+            if [ "$EXISTS" == "$KV_NAME" ]; then
+              echo "Key Vault '$KV_NAME' exists. Deleting..."
+              az keyvault delete --name "$KV_NAME"
+              echo "Waiting for Key Vault to enter soft-deleted state..."
+              # Wait for the Key Vault to enter soft-deleted state
+              sleep 60
+              echo "Purging Key Vault..."
+              az keyvault purge --name "$KV_NAME" --location "$LOCATION" --no-wait
+            else
+              echo "Key Vault '$KV_NAME' does not exist. Skipping purge."
+            fi
+          fi
+
+      - name: Check and Delete Deployment if it exists
+        run: |
+          DEPLOYMENT_NAME="createResourceGroup"
+          DEPLOYMENT_EXISTS=$(az deployment sub list --query "[?name=='$DEPLOYMENT_NAME'].name" -o tsv)
+          if [ "$DEPLOYMENT_EXISTS" == "$DEPLOYMENT_NAME" ]; then
+            echo "Deployment '$DEPLOYMENT_NAME' exists. Deleting..."
+            az deployment sub delete -n "$DEPLOYMENT_NAME" --no-wait
+          else
+            echo "Deployment '$DEPLOYMENT_NAME' does not exist. Skipping deletion."
+          fi
+
   load-tests-with-chaos-products-api:
     needs: [provision, playwright-tests-ui]
     runs-on: ubuntu-22.04
@@ -665,20 +724,3 @@ jobs:
           name: playwright-report
           path: src/ContosoTraders.Ui.Website/playwright-report/
           retention-days: 30
-
-  cleanup:
-    name: Cleanup resources on failure
-    runs-on: ubuntu-22.04
-    needs: [provision]  # Adjust this list based on your job dependencies
-    if: ${{ failure() }}
-    steps:
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.SERVICEPRINCIPAL }}
-      - name: Delete Resource Group
-        run: az group delete -n '${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }}' --yes --no-wait
-      - name: Purge Key Vault
-        run: az keyvault purge --name ${{ env.KV_NAME }}${{ vars.SUFFIX }} --location ${{ vars.DEPLOYMENTREGION }} --no-wait
-      - name: Delete Deployment
-        run: az deployment sub delete -n createResourceGroup --no-wait
