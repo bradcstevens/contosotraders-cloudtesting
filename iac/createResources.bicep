@@ -72,7 +72,7 @@ var chaosAksExperimentName = 'chaos-aks-experiment-${prefixHyphenated}-${suffix}
 var chaosAksSelectorId = guid('chaos-aks-selector-id-${prefixHyphenated}-${suffix}')
 
 // key vault
-var kvName = 'kv-${prefix}-${suffix}'
+var kvName = 'kv-${prefixHyphenated}-${suffix}'
 var kvSecretNameProductsApiEndpoint = 'productsApiEndpoint'
 var kvSecretNameProductsDbConnStr = 'productsDbConnectionString'
 var kvSecretNameProfilesDbConnStr = 'profilesDbConnectionString'
