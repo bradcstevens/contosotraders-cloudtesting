@@ -1,0 +1,4 @@
+
+az group delete -n rg-contoso-traders-lab -y --no-wait
+
+az deployment sub delete -n createResourceGroup --no-wait

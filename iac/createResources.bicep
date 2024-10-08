@@ -1217,7 +1217,7 @@ resource acr 'Microsoft.ContainerRegistry/registries@2022-02-01-preview' = {
 
 resource loadtestsvc 'Microsoft.LoadTestService/loadTests@2022-12-01' = {
   name: loadTestSvcName
-  location: resourceLocation
+  location: 'westus2'
   tags: resourceTags
   identity: {
     type: 'UserAssigned'
