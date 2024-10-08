@@ -35,7 +35,7 @@ env:
   PRODUCT_DETAILS_CONTAINER_NAME: product-details
   PRODUCT_IMAGES_STORAGE_ACCOUNT_NAME: sacontosotradersimg
   PRODUCT_LIST_CONTAINER_NAME: product-list
-  PRODUCTS_CDN_ENDPOINT_NAME: contoso-traders-images- # Checked
+  PRODUCTS_CDN_ENDPOINT_NAME: cdn-images-contoso-traders- # Checked
   RESOURCE_GROUP_NAME: rg-contoso-traders- # Checked
   STORAGE_ACCOUNT_NAME: sacontosotradersimg
   UI_CDN_ENDPOINT_NAME: cdn-ui2-contoso-traders- # Checked
