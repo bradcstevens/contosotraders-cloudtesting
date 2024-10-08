@@ -152,7 +152,7 @@ jobs:
         with:
           scope: resourcegroup
           region: ${{ vars.DEPLOYMENTREGION }}
-          resourceGroupName: ${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }}
+          resourceGroupName: '${{ env.RESOURCE_GROUP_NAME }}-${{ vars.SUFFIX }}'
           template: ./iac/createResources.bicep
           parameters: ./iac/createResources.parameters.json suffix=${{ vars.SUFFIX }} sqlPassword=${{ secrets.SQLPASSWORD }} deployPrivateEndpoints=${{ vars.DEPLOYPRIVATEENDPOINTS }}
       # Add the logged-in service principal to the key vault access policy
