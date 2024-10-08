@@ -41,7 +41,7 @@ var acrName = 'acr${prefix}${suffix}'
 // aks cluster
 var aksClusterName = 'aks-${prefixHyphenated}-${suffix}'
 var aksClusterDnsPrefix = 'aks-${prefixHyphenated}-${suffix}'
-var aksClusterNodeResourceGroup = 'rg-aks-nodes-${prefixHyphenated}--${suffix}'
+var aksClusterNodeResourceGroup = 'rg-aks-nodes-${prefixHyphenated}-${suffix}'
 
 // azure container app (carts api)
 var cartsApiAcaName = 'aca-${prefixHyphenated}-carts-${suffix}'
