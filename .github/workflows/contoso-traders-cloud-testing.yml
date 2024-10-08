@@ -677,7 +677,7 @@ jobs:
         with:
           creds: ${{ secrets.SERVICEPRINCIPAL }}
       - name: Delete Resource Group
-        run: az group delete -n '${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }}' --no-wait
+        run: az group delete -n '${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }}' --yes --no-wait
       - name: Purge Key Vault
         run: az keyvault purge --name ${{ env.KV_NAME }}${{ vars.SUFFIX }} --location ${{ vars.DEPLOYMENTREGION }} --no-wait
       - name: Delete Deployment
