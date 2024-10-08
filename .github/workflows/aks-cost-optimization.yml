@@ -4,16 +4,16 @@ on:
   workflow_dispatch:
   
 env:
-  ACR_NAME: contosotradersacr
-  AKS_CLUSTER_NAME: contoso-traders-aks
+  ACR_NAME: acrcontosotraders
+  AKS_CLUSTER_NAME: aks-contoso-traders
   AKS_CPU_LIMIT: 250m
   AKS_MEMORY_LIMIT: 256Mi
   AKS_REPLICAS: "1"
   AKS_SECRET_NAME_ACR_PASSWORD: contoso-traders-acr-password
-  KV_NAME: contosotraderskv
-  LOAD_TEST_SERVICE_NAME: contoso-traders-loadtest
+  KV_NAME: kv-contosotraders
+  LOAD_TEST_SERVICE_NAME: lt-contoso-traders
   PRODUCTS_ACR_REPOSITORY_NAME: contosotradersapiproducts
-  RESOURCE_GROUP_NAME: contoso-traders-rg
+  RESOURCE_GROUP_NAME: rg-contoso-traders
 
 jobs:
   aks-cost-optimization:

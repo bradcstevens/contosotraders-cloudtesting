@@ -152,22 +152,22 @@ jobs:
         with:
           scope: resourcegroup
           region: ${{ vars.DEPLOYMENTREGION }}
-          resourceGroupName: '${{ env.RESOURCE_GROUP_NAME }}-${{ vars.SUFFIX }}'
+          resourceGroupName: ${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }}
           template: ./iac/createResources.bicep
           parameters: ./iac/createResources.parameters.json suffix=${{ vars.SUFFIX }} sqlPassword=${{ secrets.SQLPASSWORD }} deployPrivateEndpoints=${{ vars.DEPLOYPRIVATEENDPOINTS }}
       # Add the logged-in service principal to the key vault access policy
       - name: add service principal to kv access policy
         uses: azure/CLI@v1
         with:
-          inlineScript: az keyvault set-policy -n ${{ env.KV_NAME }}${{ vars.SUFFIX }} -g ${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }} --secret-permissions get list set --object-id $(az ad sp show --id $(az account show --query "user.name" -o tsv) --query "id" -o tsv)
+          inlineScript: az keyvault set-policy -n '${{ env.KV_NAME }}-${{ vars.SUFFIX }}' -g '${{ env.RESOURCE_GROUP_NAME }}-${{ vars.SUFFIX }}' --secret-permissions get list set --object-id $(az ad sp show --id $(az account show --query "user.name" -o tsv) --query "id" -o tsv)
       # The AKS agent pool needs to be assigned the user-assigned managed identity created (which has kv access)
       - name: assign user-assigned managed-identity to aks agentpool
         uses: azure/CLI@v1
         with:
           inlineScript: |
             az vmss identity assign \
-              --identities $(az identity show -g ${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }} --name ${{ env.USER_ASSIGNED_MANAGED_IDENTITY_NAME }}${{ vars.SUFFIX }} --query "id" -o tsv) \
-              --ids $(az vmss list -g ${{ env.AKS_NODES_RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }} --query "[0].id" -o tsv) \
+              --identities $(az identity show -g '${{ env.RESOURCE_GROUP_NAME }}-${{ vars.SUFFIX }}' --name '${{ env.USER_ASSIGNED_MANAGED_IDENTITY_NAME }}-${{ vars.SUFFIX }}' --query "id" -o tsv) \
+              --ids $(az vmss list -g '${{ env.AKS_NODES_RESOURCE_GROUP_NAME }}-${{ vars.SUFFIX }}' --query "[0].id" -o tsv) \
       # Seed the DBs and storage accounts
       - name: seed products db
         uses: azure/sql-action@v2.2

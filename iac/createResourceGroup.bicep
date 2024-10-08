@@ -35,7 +35,7 @@ param rgLocation string
 
 // tags
 var rgTags = {
-  Product: '${rgName}${suffix}'
+  Product: 'contoso-traders-${suffix}'
   Environment: suffix
 }
 
