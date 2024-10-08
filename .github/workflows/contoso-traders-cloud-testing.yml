@@ -7,40 +7,40 @@ on:
     paths-ignore: ["docs/**", "demo-scripts/**"]
 
 env:
-  ACR_NAME: contosotradersacr
-  AKS_CLUSTER_NAME: contoso-traders-aks
+  ACR_NAME: acrcontosotraderslab
+  AKS_CLUSTER_NAME: aks-contoso-traders
   AKS_CPU_LIMIT: 250m
   AKS_DNS_LABEL: contoso-traders-products
   AKS_MEMORY_LIMIT: 256Mi
-  AKS_NODES_RESOURCE_GROUP_NAME: contoso-traders-aks-nodes-rg
+  AKS_NODES_RESOURCE_GROUP_NAME: rg-contoso-traders-aks-nodes
   AKS_REPLICAS: "1"
   AKS_SECRET_NAME_ACR_PASSWORD: contoso-traders-acr-password
-  AKS_SECRET_NAME_KV_ENDPOINT: contoso-traders-kv-endpoint
-  AKS_SECRET_NAME_MI_CLIENTID: contoso-traders-mi-clientid
-  AZURE_AD_APP_NAME: contoso-traders-cloud-testing-app
-  CARTS_ACA_NAME: contoso-traders-carts
+  AKS_SECRET_NAME_KV_ENDPOINT: kv-contoso-traders-endpoint
+  AKS_SECRET_NAME_MI_CLIENTID: mi-contoso-traders-clientid
+  AZURE_AD_APP_NAME: app-contoso-traders-cloud-testing
+  CARTS_ACA_NAME: aca-contoso-traders-carts
   CARTS_ACR_REPOSITORY_NAME: contosotradersapicarts
-  CARTS_INTERNAL_ACA_NAME: contoso-traders-intcarts
-  CDN_PROFILE_NAME: contoso-traders-cdn
-  CHAOS_AKS_EXPERIMENT_NAME: contoso-traders-chaos-aks-experiment
-  KV_NAME: contosotraderskv
-  LOAD_TEST_SERVICE_NAME: contoso-traders-loadtest
+  CARTS_INTERNAL_ACA_NAME: aca-contoso-traders-intcarts
+  CDN_PROFILE_NAME: cdn-contoso-traders
+  CHAOS_AKS_EXPERIMENT_NAME: chaos-aks-experiment-contoso-traders
+  KV_NAME: kv-contosotraders
+  LOAD_TEST_SERVICE_NAME: lt-contoso-traders
   MSGRAPH_API_ID: 00000003-0000-0000-c000-000000000000
   MSGRAPH_API_PERMISSION_EMAIL: 64a6cdd6-aab1-4aaf-94b8-3cc8405e90d0=Scope
   MSGRAPH_API_PERMISSION_USER_READ: e1fe6dd8-ba31-4d61-89e7-88639da4683d=Scope
   PRODUCTS_ACR_REPOSITORY_NAME: contosotradersapiproducts
   PRODUCTS_DB_NAME: productsdb
-  PRODUCTS_DB_SERVER_NAME: contoso-traders-products
+  PRODUCTS_DB_SERVER_NAME: sql-contoso-traders-products
   PRODUCTS_DB_USER_NAME: localadmin
   PRODUCT_DETAILS_CONTAINER_NAME: product-details
-  PRODUCT_IMAGES_STORAGE_ACCOUNT_NAME: contosotradersimg
+  PRODUCT_IMAGES_STORAGE_ACCOUNT_NAME: sacontosotradersimg
   PRODUCT_LIST_CONTAINER_NAME: product-list
   PRODUCTS_CDN_ENDPOINT_NAME: contoso-traders-images
-  RESOURCE_GROUP_NAME: contoso-traders-rg
-  STORAGE_ACCOUNT_NAME: contosotradersimg
-  UI_CDN_ENDPOINT_NAME: contoso-traders-ui2
-  UI_STORAGE_ACCOUNT_NAME: contosotradersui2
-  USER_ASSIGNED_MANAGED_IDENTITY_NAME: contoso-traders-mi-kv-access
+  RESOURCE_GROUP_NAME: rg-contoso-traders
+  STORAGE_ACCOUNT_NAME: sacontosotradersimg
+  UI_CDN_ENDPOINT_NAME: cdn-ui2-contoso-traders
+  UI_STORAGE_ACCOUNT_NAME: sacontosotradersui2
+  USER_ASSIGNED_MANAGED_IDENTITY_NAME: mi-contoso-traders-kv-access
 
 jobs:
   provision:

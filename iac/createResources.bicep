@@ -35,50 +35,13 @@ param deployPrivateEndpoints bool = false
 // variables
 ////////////////////////////////////////////////////////////////////////////////
 
-// key vault
-var kvName = 'kv-${prefix}-${suffix}'
-var kvSecretNameProductsApiEndpoint = 'productsApiEndpoint'
-var kvSecretNameProductsDbConnStr = 'productsDbConnectionString'
-var kvSecretNameProfilesDbConnStr = 'profilesDbConnectionString'
-var kvSecretNameStocksDbConnStr = 'stocksDbConnectionString'
-var kvSecretNameCartsApiEndpoint = 'cartsApiEndpoint'
-var kvSecretNameCartsInternalApiEndpoint = 'cartsInternalApiEndpoint'
-var kvSecretNameCartsDbConnStr = 'cartsDbConnectionString'
-var kvSecretNameImagesEndpoint = 'imagesEndpoint'
-var kvSecretNameAppInsightsConnStr = 'appInsightsConnectionString'
-var kvSecretNameUiCdnEndpoint = 'uiCdnEndpoint'
-var kvSecretNameVnetAcaSubnetId = 'vnetAcaSubnetId'
+// azure container registry
+var acrName = 'acr${prefix}${suffix}'
 
-// user-assigned managed identity (for key vault access)
-var userAssignedMIForKVAccessName = 'mi-${prefixHyphenated}-kv-access-${suffix}'
-
-// cosmos db (stocks db)
-var stocksDbAcctName = 'cosmos-${prefixHyphenated}-stocks-${suffix}'
-var stocksDbName = 'stocksdb'
-var stocksDbStocksContainerName = 'stocks'
-
-// cosmos db (carts db)
-var cartsDbAcctName = 'cosmos-${prefixHyphenated}-carts-${suffix}'
-var cartsDbName = 'cartsdb'
-var cartsDbStocksContainerName = 'carts'
-
-// app service plan (products api)
-var productsApiAppSvcPlanName = 'asp-${prefixHyphenated}-products-${suffix}'
-var productsApiAppSvcName = 'as-${prefixHyphenated}-products-${suffix}'
-var productsApiSettingNameKeyVaultEndpoint = 'KeyVaultEndpoint'
-var productsApiSettingNameManagedIdentityClientId = 'ManagedIdentityClientId'
-
-// sql azure (products db)
-var productsDbServerName = 'sql-${prefixHyphenated}-products-${suffix}'
-var productsDbName = 'productsdb'
-var productsDbServerAdminLogin = 'localadmin'
-var productsDbServerAdminPassword = sqlPassword
-
-// sql azure (profiles db)
-var profilesDbServerName = 'sql-${prefixHyphenated}-profiles-${suffix}'
-var profilesDbName = 'profilesdb'
-var profilesDbServerAdminLogin = 'localadmin'
-var profilesDbServerAdminPassword = sqlPassword
+// aks cluster
+var aksClusterName = 'aks-${prefixHyphenated}-${suffix}'
+var aksClusterDnsPrefix = 'aks-${prefixHyphenated}-${suffix}'
+var aksClusterNodeResourceGroup = 'rg-aks-nodes-${prefixHyphenated}--${suffix}'
 
 // azure container app (carts api)
 var cartsApiAcaName = 'aca-${prefixHyphenated}-carts-${suffix}'
@@ -96,32 +59,84 @@ var cartsInternalApiAcaContainerDetailsName = 'aca-${prefixHyphenated}-intcarts-
 var cartsInternalApiSettingNameKeyVaultEndpoint = 'KeyVaultEndpoint'
 var cartsInternalApiSettingNameManagedIdentityClientId = 'ManagedIdentityClientId'
 
-// storage account (product images)
-var productImagesStgAccName = 'sa${prefix}img${suffix}'
-var productImagesProductDetailsContainerName = 'product-details'
-var productImagesProductListContainerName = 'product-list'
-
-// storage account (old website)
-var uiStgAccName = 'sa${prefix}ui${suffix}'
-
-// storage account (new website)
-var ui2StgAccName = 'sa${prefix}ui2${suffix}'
-
-// storage account (image classifier)
-var imageClassifierStgAccName = 'sa${prefix}ic${suffix}'
-var imageClassifierWebsiteUploadsContainerName = 'website-uploads'
-
 // cdn
 var cdnProfileName = 'cdn-${prefixHyphenated}-${suffix}'
 var cdnImagesEndpointName = 'cdn-images-${prefixHyphenated}-${suffix}'
 var cdnUiEndpointName = 'cdn-ui-${prefixHyphenated}-${suffix}'
 var cdnUi2EndpointName = 'cdn-ui2-${prefixHyphenated}-${suffix}'
 
-// azure container registry
-var acrName = 'acr${prefix}${suffix}'
+// chaos studio
+var chaosKvExperimentName = 'chaos-kv-experiment-${prefixHyphenated}-${suffix}'
+var chaosKvSelectorId = guid('chaos-kv-selector-id-${prefixHyphenated}-${suffix}')
+var chaosAksExperimentName = 'chaos-aks-experiment-${prefixHyphenated}-${suffix}'
+var chaosAksSelectorId = guid('chaos-aks-selector-id-${prefixHyphenated}-${suffix}')
+
+// key vault
+var kvName = 'kv-${prefix}-${suffix}'
+var kvSecretNameProductsApiEndpoint = 'productsApiEndpoint'
+var kvSecretNameProductsDbConnStr = 'productsDbConnectionString'
+var kvSecretNameProfilesDbConnStr = 'profilesDbConnectionString'
+var kvSecretNameStocksDbConnStr = 'stocksDbConnectionString'
+var kvSecretNameCartsApiEndpoint = 'cartsApiEndpoint'
+var kvSecretNameCartsInternalApiEndpoint = 'cartsInternalApiEndpoint'
+var kvSecretNameCartsDbConnStr = 'cartsDbConnectionString'
+var kvSecretNameImagesEndpoint = 'imagesEndpoint'
+var kvSecretNameAppInsightsConnStr = 'appInsightsConnectionString'
+var kvSecretNameUiCdnEndpoint = 'uiCdnEndpoint'
+var kvSecretNameVnetAcaSubnetId = 'vnetAcaSubnetId'
 
 // load testing service
 var loadTestSvcName = 'lt-${prefixHyphenated}-${suffix}'
+
+// sql azure (products db)
+var productsDbServerName = 'sql-${prefixHyphenated}-products-${suffix}'
+var productsDbName = 'productsdb'
+var productsDbServerAdminLogin = 'localadmin'
+var productsDbServerAdminPassword = sqlPassword
+
+// storage account (product images)
+var productImagesStgAccName = 'sa${prefix}img${suffix}'
+var productImagesProductDetailsContainerName = 'product-details'
+var productImagesProductListContainerName = 'product-list'
+
+// storage account (new website)
+var ui2StgAccName = 'sa${prefix}ui2${suffix}'
+
+// user-assigned managed identity (for key vault access)
+var userAssignedMIForKVAccessName = 'mi-${prefixHyphenated}-kv-access-${suffix}'
+
+////////////////////////////////////////////////////////////////////////////////
+
+// cosmos db (stocks db)
+var stocksDbAcctName = 'cosmos-${prefixHyphenated}-stocks-${suffix}'
+var stocksDbName = 'stocksdb'
+var stocksDbStocksContainerName = 'stocks'
+
+// cosmos db (carts db)
+var cartsDbAcctName = 'cosmos-${prefixHyphenated}-carts-${suffix}'
+var cartsDbName = 'cartsdb'
+var cartsDbStocksContainerName = 'carts'
+
+// app service plan (products api)
+var productsApiAppSvcPlanName = 'asp-${prefixHyphenated}-products-${suffix}'
+var productsApiAppSvcName = 'as-${prefixHyphenated}-products-${suffix}'
+var productsApiSettingNameKeyVaultEndpoint = 'KeyVaultEndpoint'
+var productsApiSettingNameManagedIdentityClientId = 'ManagedIdentityClientId'
+
+
+
+// sql azure (profiles db)
+var profilesDbServerName = 'sql-${prefixHyphenated}-profiles-${suffix}'
+var profilesDbName = 'profilesdb'
+var profilesDbServerAdminLogin = 'localadmin'
+var profilesDbServerAdminPassword = sqlPassword
+
+// storage account (old website)
+var uiStgAccName = 'sa${prefix}ui${suffix}'
+
+// storage account (image classifier)
+var imageClassifierStgAccName = 'sa${prefix}ic${suffix}'
+var imageClassifierWebsiteUploadsContainerName = 'website-uploads'
 
 // application insights
 var logAnalyticsWorkspaceName = 'la-${prefixHyphenated}-${suffix}'
@@ -129,11 +144,6 @@ var appInsightsName = 'app-insights-${prefixHyphenated}-${suffix}'
 
 // portal dashboard
 var portalDashboardName = 'dashboard-${prefixHyphenated}-${suffix}'
-
-// aks cluster
-var aksClusterName = 'aks-${prefixHyphenated}-${suffix}'
-var aksClusterDnsPrefix = 'aks-${prefixHyphenated}-${suffix}'
-var aksClusterNodeResourceGroup = 'rg-aks-nodes-${prefixHyphenated}--${suffix}'
 
 // virtual network
 var vnetName = 'vnet-${prefixHyphenated}-${suffix}'
@@ -157,12 +167,6 @@ var jumpboxVmShutdownScheduleTimezoneId = 'UTC'
 
 // private dns zone
 var privateDnsZoneVnetLinkName = 'privatednszone-vnet-link-${prefixHyphenated}-${suffix}'
-
-// chaos studio
-var chaosKvExperimentName = 'chaos-kv-experiment-${prefixHyphenated}-${suffix}'
-var chaosKvSelectorId = guid('chaos-kv-selector-id-${prefixHyphenated}-${suffix}')
-var chaosAksExperimentName = 'chaos-aks-experiment-${prefixHyphenated}-${suffix}'
-var chaosAksSelectorId = guid('chaos-aks-selector-id-${prefixHyphenated}-${suffix}')
 
 // tags
 var resourceTags = {
