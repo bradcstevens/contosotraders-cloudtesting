@@ -36,7 +36,7 @@ param deployPrivateEndpoints bool = false
 ////////////////////////////////////////////////////////////////////////////////
 
 // key vault
-var kvName = '${prefix}kv-${suffix}'
+var kvName = 'kv-${prefix}-${suffix}'
 var kvSecretNameProductsApiEndpoint = 'productsApiEndpoint'
 var kvSecretNameProductsDbConnStr = 'productsDbConnectionString'
 var kvSecretNameProfilesDbConnStr = 'profilesDbConnectionString'
@@ -50,119 +50,119 @@ var kvSecretNameUiCdnEndpoint = 'uiCdnEndpoint'
 var kvSecretNameVnetAcaSubnetId = 'vnetAcaSubnetId'
 
 // user-assigned managed identity (for key vault access)
-var userAssignedMIForKVAccessName = '${prefixHyphenated}-mi-kv-access-${suffix}'
+var userAssignedMIForKVAccessName = 'mi-${prefixHyphenated}-kv-access-${suffix}'
 
 // cosmos db (stocks db)
-var stocksDbAcctName = '${prefixHyphenated}-stocks-${suffix}'
+var stocksDbAcctName = 'cosmos-${prefixHyphenated}-stocks-${suffix}'
 var stocksDbName = 'stocksdb'
 var stocksDbStocksContainerName = 'stocks'
 
 // cosmos db (carts db)
-var cartsDbAcctName = '${prefixHyphenated}-carts-${suffix}'
+var cartsDbAcctName = 'cosmos-${prefixHyphenated}-carts-${suffix}'
 var cartsDbName = 'cartsdb'
 var cartsDbStocksContainerName = 'carts'
 
 // app service plan (products api)
-var productsApiAppSvcPlanName = '${prefixHyphenated}-products-${suffix}'
-var productsApiAppSvcName = '${prefixHyphenated}-products-${suffix}'
+var productsApiAppSvcPlanName = 'asp-${prefixHyphenated}-products-${suffix}'
+var productsApiAppSvcName = 'as-${prefixHyphenated}-products-${suffix}'
 var productsApiSettingNameKeyVaultEndpoint = 'KeyVaultEndpoint'
 var productsApiSettingNameManagedIdentityClientId = 'ManagedIdentityClientId'
 
 // sql azure (products db)
-var productsDbServerName = '${prefixHyphenated}-products-${suffix}'
+var productsDbServerName = 'sql-${prefixHyphenated}-products-${suffix}'
 var productsDbName = 'productsdb'
 var productsDbServerAdminLogin = 'localadmin'
 var productsDbServerAdminPassword = sqlPassword
 
 // sql azure (profiles db)
-var profilesDbServerName = '${prefixHyphenated}-profiles-${suffix}'
+var profilesDbServerName = 'sql-${prefixHyphenated}-profiles-${suffix}'
 var profilesDbName = 'profilesdb'
 var profilesDbServerAdminLogin = 'localadmin'
 var profilesDbServerAdminPassword = sqlPassword
 
 // azure container app (carts api)
-var cartsApiAcaName = '${prefixHyphenated}-carts-${suffix}'
-var cartsApiAcaEnvName = '${prefix}acaenv${suffix}'
+var cartsApiAcaName = 'aca-${prefixHyphenated}-carts-${suffix}'
+var cartsApiAcaEnvName = 'aca${prefix}env${suffix}'
 var cartsApiAcaSecretAcrPassword = 'acr-password'
-var cartsApiAcaContainerDetailsName = '${prefixHyphenated}-carts-${suffix}'
+var cartsApiAcaContainerDetailsName = 'aca-${prefixHyphenated}-carts-${suffix}'
 var cartsApiSettingNameKeyVaultEndpoint = 'KeyVaultEndpoint'
 var cartsApiSettingNameManagedIdentityClientId = 'ManagedIdentityClientId'
 
 // azure container app (carts api - internal only)
-var cartsInternalApiAcaName = '${prefixHyphenated}-intcarts-${suffix}'
-var cartsInternalApiAcaEnvName = '${prefix}intacaenv${suffix}'
+var cartsInternalApiAcaName = 'aca-${prefixHyphenated}-intcarts-${suffix}'
+var cartsInternalApiAcaEnvName = 'aca${prefix}intenv${suffix}'
 var cartsInternalApiAcaSecretAcrPassword = 'acr-password'
-var cartsInternalApiAcaContainerDetailsName = '${prefixHyphenated}-intcarts-${suffix}'
+var cartsInternalApiAcaContainerDetailsName = 'aca-${prefixHyphenated}-intcarts-${suffix}'
 var cartsInternalApiSettingNameKeyVaultEndpoint = 'KeyVaultEndpoint'
 var cartsInternalApiSettingNameManagedIdentityClientId = 'ManagedIdentityClientId'
 
 // storage account (product images)
-var productImagesStgAccName = '${prefix}img${suffix}'
+var productImagesStgAccName = 'sa${prefix}img${suffix}'
 var productImagesProductDetailsContainerName = 'product-details'
 var productImagesProductListContainerName = 'product-list'
 
 // storage account (old website)
-var uiStgAccName = '${prefix}ui${suffix}'
+var uiStgAccName = 'sa${prefix}ui${suffix}'
 
 // storage account (new website)
-var ui2StgAccName = '${prefix}ui2${suffix}'
+var ui2StgAccName = 'sa${prefix}ui2${suffix}'
 
 // storage account (image classifier)
-var imageClassifierStgAccName = '${prefix}ic${suffix}'
+var imageClassifierStgAccName = 'sa${prefix}ic${suffix}'
 var imageClassifierWebsiteUploadsContainerName = 'website-uploads'
 
 // cdn
-var cdnProfileName = '${prefixHyphenated}-cdn-${suffix}'
-var cdnImagesEndpointName = '${prefixHyphenated}-images-${suffix}'
-var cdnUiEndpointName = '${prefixHyphenated}-ui-${suffix}'
-var cdnUi2EndpointName = '${prefixHyphenated}-ui2-${suffix}'
+var cdnProfileName = 'cdn-${prefixHyphenated}-${suffix}'
+var cdnImagesEndpointName = 'cdn-images-${prefixHyphenated}-${suffix}'
+var cdnUiEndpointName = 'cdn-ui-${prefixHyphenated}-${suffix}'
+var cdnUi2EndpointName = 'cdn-ui2-${prefixHyphenated}-${suffix}'
 
 // azure container registry
-var acrName = '${prefix}acr${suffix}'
+var acrName = 'acr${prefix}${suffix}'
 
 // load testing service
-var loadTestSvcName = '${prefixHyphenated}-loadtest-${suffix}'
+var loadTestSvcName = 'lt-${prefixHyphenated}-${suffix}'
 
 // application insights
-var logAnalyticsWorkspaceName = '${prefixHyphenated}-loganalytics-${suffix}'
-var appInsightsName = '${prefixHyphenated}-ai-${suffix}'
+var logAnalyticsWorkspaceName = 'la-${prefixHyphenated}-${suffix}'
+var appInsightsName = 'app-insights-${prefixHyphenated}-${suffix}'
 
 // portal dashboard
-var portalDashboardName = '${prefixHyphenated}-dashboard-${suffix}'
+var portalDashboardName = 'dashboard-${prefixHyphenated}-${suffix}'
 
 // aks cluster
-var aksClusterName = '${prefixHyphenated}-aks-${suffix}'
-var aksClusterDnsPrefix = '${prefixHyphenated}-aks-${suffix}'
-var aksClusterNodeResourceGroup = '${prefixHyphenated}-aks-nodes-rg-${suffix}'
+var aksClusterName = 'aks-${prefixHyphenated}-${suffix}'
+var aksClusterDnsPrefix = 'aks-${prefixHyphenated}-${suffix}'
+var aksClusterNodeResourceGroup = 'rg-aks-nodes-${prefixHyphenated}--${suffix}'
 
 // virtual network
-var vnetName = '${prefixHyphenated}-vnet-${suffix}'
+var vnetName = 'vnet-${prefixHyphenated}-${suffix}'
 var vnetAddressSpace = '10.0.0.0/16'
-var vnetAcaSubnetName = 'subnet-aca'
+var vnetAcaSubnetName = 'sn-aca'
 var vnetAcaSubnetAddressPrefix = '10.0.0.0/23'
-var vnetVmSubnetName = 'subnet-vm'
+var vnetVmSubnetName = 'sn-vm'
 var vnetVmSubnetAddressPrefix = '10.0.2.0/23'
-var vnetLoadTestSubnetName = 'subnet-loadtest'
+var vnetLoadTestSubnetName = 'sn-loadtest'
 var vnetLoadTestSubnetAddressPrefix = '10.0.4.0/23'
 
 // jumpbox vm
-var jumpboxPublicIpName = '${prefixHyphenated}-jumpbox-${suffix}'
-var jumpboxNsgName = '${prefixHyphenated}-jumpbox-${suffix}'
-var jumpboxNicName = '${prefixHyphenated}-jumpbox-${suffix}'
-var jumpboxVmName = 'jumpboxvm'
+var jumpboxPublicIpName = 'jb-${prefixHyphenated}-${suffix}'
+var jumpboxNsgName = 'jb-${prefixHyphenated}-${suffix}'
+var jumpboxNicName = 'jb-${prefixHyphenated}-${suffix}'
+var jumpboxVmName = 'vm-jumpbox'
 var jumpboxVmAdminLogin = 'localadmin'
 var jumpboxVmAdminPassword = sqlPassword
 var jumpboxVmShutdownSchduleName = 'shutdown-computevm-jumpboxvm'
 var jumpboxVmShutdownScheduleTimezoneId = 'UTC'
 
 // private dns zone
-var privateDnsZoneVnetLinkName = '${prefixHyphenated}-privatednszone-vnet-link-${suffix}'
+var privateDnsZoneVnetLinkName = 'privatednszone-vnet-link-${prefixHyphenated}-${suffix}'
 
 // chaos studio
-var chaosKvExperimentName = '${prefixHyphenated}-chaos-kv-experiment-${suffix}'
-var chaosKvSelectorId = guid('${prefixHyphenated}-chaos-kv-selector-id-${suffix}')
-var chaosAksExperimentName = '${prefixHyphenated}-chaos-aks-experiment-${suffix}'
-var chaosAksSelectorId = guid('${prefixHyphenated}-chaos-aks-selector-id-${suffix}')
+var chaosKvExperimentName = 'chaos-kv-experiment-${prefixHyphenated}-${suffix}'
+var chaosKvSelectorId = guid('chaos-kv-selector-id-${prefixHyphenated}-${suffix}')
+var chaosAksExperimentName = 'chaos-aks-experiment-${prefixHyphenated}-${suffix}'
+var chaosAksSelectorId = guid('chaos-aks-selector-id-${prefixHyphenated}-${suffix}')
 
 // tags
 var resourceTags = {
