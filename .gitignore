@@ -9,6 +9,8 @@ auth.json
 *.user
 *.userosscache
 *.sln.docstates
+*.contosotraders-sp
+*.env
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

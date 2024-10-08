@@ -2,6 +2,7 @@
 	"name": "Playwright",
 	"image": "mcr.microsoft.com/playwright:v1.43.1-jammy",
 	"features": {
+		"ghcr.io/devcontainers/features/azure-cli:1": {},
 		"ghcr.io/devcontainers/features/node:1": {
 			"nodeGypDependencies": true,
 			"version": "18"
@@ -10,5 +11,13 @@
 			"package": "typescript",
 			"version": "latest"
 		}
-	}
+	},
+    // Configure tool-specific properties.
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "GitHub.copilot-chat"
+            ]
+        }
+    }
 }
