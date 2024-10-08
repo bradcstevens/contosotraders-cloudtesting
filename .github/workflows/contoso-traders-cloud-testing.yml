@@ -453,7 +453,9 @@ jobs:
     runs-on: ubuntu-22.04
     needs: 
       - provision  # Adjust this list based on your job dependencies
-    if: ${{ failure() }}
+      # Use failure() in the following if statement to run this job only when the previous job fails
+      # Use false in the following if statement to skip this job when the previous job fails
+    if: ${{ false }}
     steps:
       - name: Azure Login
         uses: azure/login@v1
