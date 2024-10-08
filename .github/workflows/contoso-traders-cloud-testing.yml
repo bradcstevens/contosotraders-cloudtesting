@@ -1,4 +1,4 @@
-name: contoso-traders-cloud-testing
+name: Provision and Test Contoso Traders
 
 on:
   workflow_dispatch:
@@ -449,7 +449,7 @@ jobs:
           inlineScript: echo UI CDN endpoint accessible at https://$(az keyvault secret show --vault-name ${{ env.KV_NAME }}${{ vars.SUFFIX }} --name uiCdnEndpoint --query value -o tsv)
 
   cleanup:
-    name: Cleanup resources on failure
+    name: Cleanup Resources on Failure
     runs-on: ubuntu-22.04
     needs: 
       - provision  # Adjust this list based on your job dependencies
@@ -465,7 +465,7 @@ jobs:
           RESOURCE_GROUP_NAME="${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }}"
           if az group exists -n "$RESOURCE_GROUP_NAME"; then
             echo "Resource group '$RESOURCE_GROUP_NAME' exists. Deleting..."
-            az group delete -n "$RESOURCE_GROUP_NAME" -y --no-wait
+            az group delete -n "$RESOURCE_GROUP_NAME" -y
           else
             echo "Resource group '$RESOURCE_GROUP_NAME' does not exist. Skipping deletion."
           fi
@@ -478,7 +478,7 @@ jobs:
           SOFT_DELETED=$(az keyvault list-deleted --query "[?name=='$KV_NAME'].name" -o tsv)
           if [ "$SOFT_DELETED" == "$KV_NAME" ]; then
             echo "Key Vault '$KV_NAME' is in soft-deleted state. Purging..."
-            az keyvault purge --name "$KV_NAME" --location "$LOCATION" --no-wait
+            az keyvault purge --name "$KV_NAME" --location "$LOCATION"
           else
             echo "Key Vault '$KV_NAME' is not in soft-deleted state. Checking if it exists..."
             # Check if Key Vault exists
@@ -490,7 +490,7 @@ jobs:
               # Wait for the Key Vault to enter soft-deleted state
               sleep 60
               echo "Purging Key Vault..."
-              az keyvault purge --name "$KV_NAME" --location "$LOCATION" --no-wait
+              az keyvault purge --name "$KV_NAME" --location "$LOCATION"
             else
               echo "Key Vault '$KV_NAME' does not exist. Skipping purge."
             fi
@@ -502,7 +502,7 @@ jobs:
           DEPLOYMENT_EXISTS=$(az deployment sub list --query "[?name=='$DEPLOYMENT_NAME'].name" -o tsv)
           if [ "$DEPLOYMENT_EXISTS" == "$DEPLOYMENT_NAME" ]; then
             echo "Deployment '$DEPLOYMENT_NAME' exists. Deleting..."
-            az deployment sub delete -n "$DEPLOYMENT_NAME" --no-wait
+            az deployment sub delete -n "$DEPLOYMENT_NAME"
           else
             echo "Deployment '$DEPLOYMENT_NAME' does not exist. Skipping deletion."
           fi
