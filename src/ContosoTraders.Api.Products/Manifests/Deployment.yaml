@@ -18,7 +18,7 @@ spec:
       containers:
         - name: contoso-traders-products
           #Note: The '{SUFFIX}' token will be substituted with the value of the SUFFIX github variable by github workflow.
-          image: contosotradersacr{SUFFIX}.azurecr.io/contosotradersapiproducts:latest
+          image: acrcontosotraders{SUFFIX}.azurecr.io/contosotradersapiproducts:latest
           env:
             - name: KeyVaultEndpoint
               valueFrom:

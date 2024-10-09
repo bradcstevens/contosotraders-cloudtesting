@@ -52,6 +52,7 @@ jobs:
     outputs:
       azureAdAppClientId: ${{ steps.get-azureAdAppClientId.outputs.azureAdAppClientId }}
       azureAdAppObjId: ${{ steps.get-azureAdAppObjId.outputs.azureAdAppObjId }}
+    if: ${{ false }}
     steps:
       - name: checkout code
         uses: actions/checkout@v4
@@ -118,6 +119,7 @@ jobs:
   provision-resources:
     runs-on: ubuntu-22.04
     needs: [configure-azure-ad-app]
+    if: ${{ false }}
     steps:
       - name: checkout code
         uses: actions/checkout@v4
@@ -175,6 +177,7 @@ jobs:
     needs: [provision-resources]
     outputs:
       cartsApiEndpoint: ${{ steps.get-cartsApiEndpoint.outputs.cartsApiEndpoint }}
+    if: ${{ false }}
     steps:
       - name: checkout code
         uses: actions/checkout@v4
