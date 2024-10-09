@@ -528,7 +528,7 @@ jobs:
           fi
 
   load-tests-with-chaos-products-api:
-    needs: [provision, playwright-tests-ui]
+    needs: [deploy-carts-api, deploy-products-api, configure-azure-ad-app, deploy-ui, playwright-tests-ui]
     runs-on: ubuntu-22.04
     concurrency:
       group: load-tests-with-chaos-products-api
@@ -589,7 +589,7 @@ jobs:
 
   load-tests-carts-internal-api:
     if: ${{ vars.DEPLOYPRIVATEENDPOINTS == 'true' }}
-    needs: [provision, playwright-tests-ui]
+    needs: [deploy-carts-api, deploy-products-api, configure-azure-ad-app, deploy-ui, playwright-tests-ui]
     runs-on: ubuntu-22.04
     concurrency:
       group: load-tests-carts-internal-api
@@ -655,7 +655,7 @@ jobs:
             ]
 
   load-tests-carts-api:
-    needs: [provision, playwright-tests-ui]
+    needs: [deploy-carts-api, deploy-products-api, configure-azure-ad-app, deploy-ui, playwright-tests-ui]
     runs-on: ubuntu-22.04
     concurrency:
       group: load-tests-carts-api
@@ -703,7 +703,7 @@ jobs:
             ]
 
   playwright-tests-ui:
-    needs: [provision]
+    needs: [deploy-carts-api, deploy-products-api, configure-azure-ad-app, deploy-ui]
     timeout-minutes: 20
     runs-on: ubuntu-22.04
     container:
