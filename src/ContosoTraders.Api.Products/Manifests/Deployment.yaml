@@ -24,12 +24,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: kv-contoso-traders-endpoint
-                  key: mi-contoso-traders-clientid
+                  key: kv-contoso-traders-endpoint
             - name: ManagedIdentityClientId
               valueFrom:
                 secretKeyRef:
-                  name: contoso-traders-mi-clientid
-                  key: contoso-traders-mi-clientid
+                  name: mi-contoso-traders-clientid
+                  key: mi-contoso-traders-clientid
           resources:
             requests:
               cpu: 100m
