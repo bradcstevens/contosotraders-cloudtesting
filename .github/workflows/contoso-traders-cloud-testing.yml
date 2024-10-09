@@ -45,6 +45,7 @@ env:
 jobs:
 
   configure-azure-ad-app:
+    if: ${{ false }}
     runs-on: ubuntu-22.04
     env:
       AADUSERNAME: ${{ secrets.AADUSERNAME }}
@@ -52,7 +53,6 @@ jobs:
     outputs:
       azureAdAppClientId: ${{ steps.get-azureAdAppClientId.outputs.azureAdAppClientId }}
       azureAdAppObjId: ${{ steps.get-azureAdAppObjId.outputs.azureAdAppObjId }}
-    if: ${{ false }}
     steps:
       - name: checkout code
         uses: actions/checkout@v4
@@ -117,9 +117,9 @@ jobs:
               --api-permissions ${{ env.MSGRAPH_API_PERMISSION_USER_READ }} ${{ env.MSGRAPH_API_PERMISSION_EMAIL }}
 
   provision-resources:
+    if: ${{ false }}
     runs-on: ubuntu-22.04
     needs: [configure-azure-ad-app]
-    if: ${{ false }}
     steps:
       - name: checkout code
         uses: actions/checkout@v4
@@ -173,11 +173,11 @@ jobs:
           inlineScript: az cdn endpoint purge --no-wait --content-paths '/*' -n '${{ env.PRODUCTS_CDN_ENDPOINT_NAME }}${{ vars.SUFFIX }}' -g '${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }}' --profile-name '${{ env.CDN_PROFILE_NAME }}${{ vars.SUFFIX }}'
 
   deploy-carts-api:
+    if: ${{ false }}
     runs-on: ubuntu-22.04
     needs: [provision-resources]
     outputs:
       cartsApiEndpoint: ${{ steps.get-cartsApiEndpoint.outputs.cartsApiEndpoint }}
-    if: ${{ false }}
     steps:
       - name: checkout code
         uses: actions/checkout@v4
