@@ -173,6 +173,7 @@ jobs:
           inlineScript: az cdn endpoint purge --no-wait --content-paths '/*' -n '${{ env.PRODUCTS_CDN_ENDPOINT_NAME }}${{ vars.SUFFIX }}' -g '${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }}' --profile-name '${{ env.CDN_PROFILE_NAME }}${{ vars.SUFFIX }}'
 
   deploy-carts-api:
+    if: ${{ true }}
     runs-on: ubuntu-22.04
     needs: [provision-resources]
     outputs:
@@ -223,6 +224,7 @@ jobs:
           inlineScript: echo "cartsApiEndpoint"="$(az keyvault secret show --vault-name ${{ env.KV_NAME }}${{ vars.SUFFIX }} --name cartsApiEndpoint --query value -o tsv)" >> $GITHUB_OUTPUT
 
   deploy-products-api:
+    if: ${{ true }}
     runs-on: ubuntu-22.04
     needs: [deploy-carts-api]
     outputs:
@@ -411,6 +413,7 @@ jobs:
           inlineScript: echo "productsApiEndpoint"="$(az keyvault secret show --vault-name ${{ env.KV_NAME }}${{ vars.SUFFIX }} --name productsApiEndpoint --query value -o tsv)" >> $GITHUB_OUTPUT
 
   deploy-ui:
+    if: ${{ true }}
     runs-on: ubuntu-22.04
     needs: [deploy-products-api]
     outputs:
@@ -478,7 +481,7 @@ jobs:
     name: Cleanup Resources on Failure
     runs-on: ubuntu-22.04
     needs: [provision-resources]
-    if: ${{ false }}
+    if: ${{ failure() }}
     steps:
       - name: Azure Login
         uses: azure/login@v2.2.0
