@@ -23,8 +23,8 @@ spec:
             - name: KeyVaultEndpoint
               valueFrom:
                 secretKeyRef:
-                  name: contoso-traders-kv-endpoint
-                  key: contoso-traders-kv-endpoint
+                  name: kv-contoso-traders-endpoint
+                  key: mi-contoso-traders-clientid
             - name: ManagedIdentityClientId
               valueFrom:
                 secretKeyRef:
