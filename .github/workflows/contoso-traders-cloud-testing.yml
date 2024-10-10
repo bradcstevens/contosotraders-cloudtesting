@@ -568,7 +568,7 @@ jobs:
             [
               {
                 "name": "domain",
-                "value": "${{ needs.provision.outputs.productsApiEndpoint }}"
+                "value": "${{ needs.provision-resources.outputs.productsApiEndpoint }}"
               },
               {
                 "name": "protocol",
@@ -728,13 +728,13 @@ jobs:
           cache-dependency-path: src/ContosoTraders.Ui.Website/package-lock.json
       - name: Set env variables for testing endpoints
         run: |
-          echo "REACT_APP_APIURLSHOPPINGCART"="https://${{ needs.provision.outputs.cartsApiEndpoint }}/v1" >> $GITHUB_ENV
-          echo "REACT_APP_APIURL"="https://${{ needs.provision.outputs.productsApiEndpoint }}/v1" >> $GITHUB_ENV
-          echo "REACT_APP_BASEURLFORPLAYWRIGHTTESTING"="https://${{ needs.provision.outputs.uiCdnEndpoint }}" >> $GITHUB_ENV
+          echo "REACT_APP_APIURLSHOPPINGCART"="https://${{ needs.provision-resources.outputs.cartsApiEndpoint }}/v1" >> $GITHUB_ENV
+          echo "REACT_APP_APIURL"="https://${{ needs.provision-resources.outputs.productsApiEndpoint }}/v1" >> $GITHUB_ENV
+          echo "REACT_APP_BASEURLFORPLAYWRIGHTTESTING"="https://${{ needs.provision-resources.outputs.uiCdnEndpoint }}" >> $GITHUB_ENV
       - name: Set env variables for testing login
         if: ${{ env.AADUSERNAME != '' && env.AADPASSWORD != '' }}
         run: |
-          echo "REACT_APP_B2CCLIENTID"="${{ needs.provision.outputs.azureAdAppClientId }}" >> $GITHUB_ENV
+          echo "REACT_APP_B2CCLIENTID"="${{ needs.provision-resources.outputs.azureAdAppClientId }}" >> $GITHUB_ENV
           echo "REACT_APP_AADUSERNAME"="${{ env.AADUSERNAME }}" >> $GITHUB_ENV
           echo "REACT_APP_AADPASSWORD"="${{ env.AADPASSWORD }}" >> $GITHUB_ENV
       - name: install dependencies
