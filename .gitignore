@@ -15,8 +15,6 @@ auth.json
 *.contosotraders-sp
 *.env
 .env
-package-lock.json
-package.json
 playwright.config.ts
 
 # User-specific files (MonoDevelop/Xamarin Studio)
