@@ -723,9 +723,9 @@ jobs:
       AADPASSWORD: ${{ secrets.AADPASSWORD }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4.0.4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: lts/*
           cache: npm
           cache-dependency-path: src/ContosoTraders.Ui.Website/package-lock.json
       - name: Set env variables for testing endpoints
@@ -741,6 +741,8 @@ jobs:
           echo "REACT_APP_AADPASSWORD"="${{ env.AADPASSWORD }}" >> $GITHUB_ENV
       - name: install dependencies
         run: npm ci
+      - name: Install Playwright Browsers
+        run: HOME=/root npx playwright install --with-deps
       - name: run playwright tests
         id: test
         run: HOME=/root npx playwright test
