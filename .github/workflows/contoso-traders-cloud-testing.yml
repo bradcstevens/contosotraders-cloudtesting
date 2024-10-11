@@ -2,9 +2,9 @@ name: Provision and Test Contoso Traders
 
 on:
   workflow_dispatch:
-  push:
-    branches: ["main"]
-    paths-ignore: ["docs/**", "demo-scripts/**"]
+  # push:
+  #   branches: ["main"]
+  #   paths-ignore: ["docs/**", "demo-scripts/**"]
 
 env:
   ACR_NAME: acrcontosotraders # Checked
@@ -41,6 +41,7 @@ env:
   UI_CDN_ENDPOINT_NAME: cdn-ui2-contoso-traders- # Checked
   UI_STORAGE_ACCOUNT_NAME: sacontosotradersui2
   USER_ASSIGNED_MANAGED_IDENTITY_NAME: mi-contoso-traders-kv-access- # Checked
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE20: true
   
 jobs:
 
@@ -155,7 +156,7 @@ jobs:
               --identities $(az identity show -g ${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }} --name ${{ env.USER_ASSIGNED_MANAGED_IDENTITY_NAME }}${{ vars.SUFFIX }} --query "id" -o tsv) \
               --ids $(az vmss list -g ${{ env.AKS_NODES_RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }} --query "[0].id" -o tsv)
       - name: seed products db
-        uses: azure/sql-action@v2.2
+        uses: azure/sql-action@v2.3
         with:
           connection-string: Server=tcp:${{ env.PRODUCTS_DB_SERVER_NAME }}${{ vars.SUFFIX }}.database.windows.net,1433;Initial Catalog=${{ env.PRODUCTS_DB_NAME }};Persist Security Info=False;User ID=${{ env.PRODUCTS_DB_USER_NAME }};Password=${{ secrets.SQLPASSWORD }};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
           path: ./src/ContosoTraders.Api.Products/Migration/productsdb.sql
@@ -533,7 +534,7 @@ jobs:
           fi
 
   load-tests-with-chaos-products-api:
-    needs: [deploy-carts-api, deploy-products-api, configure-azure-ad-app, deploy-ui, playwright-tests-ui]
+    needs: [deploy-carts-api, deploy-products-api, configure-azure-ad-app, deploy-ui]
     runs-on: ubuntu-22.04
     concurrency:
       group: load-tests-with-chaos-products-api
@@ -594,7 +595,7 @@ jobs:
 
   load-tests-carts-internal-api:
     if: ${{ vars.DEPLOYPRIVATEENDPOINTS == 'true' }}
-    needs: [deploy-carts-api, deploy-products-api, configure-azure-ad-app, deploy-ui, playwright-tests-ui]
+    needs: [deploy-carts-api, deploy-products-api, configure-azure-ad-app, deploy-ui]
     runs-on: ubuntu-22.04
     concurrency:
       group: load-tests-carts-internal-api
@@ -660,7 +661,7 @@ jobs:
             ]
 
   load-tests-carts-api:
-    needs: [deploy-carts-api, deploy-products-api, configure-azure-ad-app, deploy-ui, playwright-tests-ui]
+    needs: [deploy-carts-api, deploy-products-api, configure-azure-ad-app, deploy-ui]
     runs-on: ubuntu-22.04
     concurrency:
       group: load-tests-carts-api
@@ -743,7 +744,7 @@ jobs:
         id: test
         run: HOME=/root npx playwright test
       - name: upload playwright report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
