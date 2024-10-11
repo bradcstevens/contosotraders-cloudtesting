@@ -4,11 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 auth.json
 .cleanup.sh
-.contoso-traders-cloud-testing.yml.bak
-package-lock.json
-package.json
-*setup.sh
-*.configService.js
+.setup.sh
 
 # User-specific files
 *.suo
