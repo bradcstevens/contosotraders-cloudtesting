@@ -5,6 +5,10 @@
 auth.json
 .cleanup.sh
 .contoso-traders-cloud-testing.yml.bak
+package-lock.json
+package.json
+*setup.sh
+*.configService.js
 
 # User-specific files
 *.suo
