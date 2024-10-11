@@ -42,28 +42,30 @@ const ConfigService = {
 
   async loadSettings() {
     if (this._needLoadSettings) {
-      const settingsResponse = await axios.get(settingsUrl);
-      // const settingsResponse = {
-      //   data: {
-      //     auth: null,
-      //     apiUrl: "https://f6b8ea119d5d435c846c.westus2.aksapp.io/webbff/v1",
-      //     apiUrlShoppingCart: "https://backend.contosotraders.com/cart-api",
-      //     useB2C: false,
-      //     b2CAuth: { clientId: "", authority: "", scopes: "" },
-      //     cart: null,
-      //     applicationInsights: { instrumentationKey: null },
-      //     debugInformation: {
-      //       sqlServerName: null,
-      //       mongoServerName: null,
-      //       customText: "",
-      //       showDebug: false,
-      //     },
-      //     byPassShoppingCartApi: false,
-      //     devspacesName: "",
-      //     productImagesUrl: null,
-      //     personalizer: { apiKey: "", endpoint: "" },
-      //   },
-      // };
+      // const settingsResponse = await axios.get(settingsUrl);
+      // console.log("here")
+      // console.log(settingsResponse);
+      const settingsResponse = {
+        data: {
+          auth: null,
+          apiUrl: "https://contoso-traders-products-lab.westus.cloudapp.azure.com/v1",
+          apiUrlShoppingCart: "https://aca-contoso-traders-carts-lab.jollystone-37aa17bd.westus.azurecontainerapps.io/v1",
+          useB2C: false,
+          b2CAuth: { clientId: "", authority: "", scopes: "" },
+          cart: null,
+          applicationInsights: { instrumentationKey: null },
+          debugInformation: {
+            sqlServerName: null,
+            mongoServerName: null,
+            customText: "",
+            showDebug: false,
+          },
+          byPassShoppingCartApi: false,
+          devspacesName: "",
+          productImagesUrl: null,
+          personalizer: { apiKey: "", endpoint: "" },
+        },
+      };
       this._needLoadSettings = false;
       this._apiUrl = settingsResponse.data.apiUrl;
       this._apiUrlShoppingCart = settingsResponse.data.apiUrlShoppingCart;

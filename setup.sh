@@ -29,21 +29,15 @@ export PATH=$PATH:$HOME/dotnet
 
 dotnet --info
 
-# rm -rf /root/.dotnet/shared/Microsoft.AspNetCore.App/7.0.410
-# rm -rf /root/.dotnet/shared/Microsoft.NETCore.App/7.0.410
-# rm -rf /usr/lib/dotnet/
-# rm -rf /root/.dotnet/
-
-# apt remove -y dotnet-sdk-7.0
-# apt remove -y aspnetcore-runtime-7.0
-# apt remove dotnet-runtime-7.0
-
 
 # Run the Products API Locally
 cd src/ContosoTraders.Api.Products/
-dotnet user-secrets set "KeyVaultEndpoint" "https://kv-contoso-traders-lab.vault.azure.net/"
+dotnet user-secrets set "KeyVaultEndpoint" "$KV_ENDPOINT"
 dotnet build && dotnet run
 
+cd src/ContosoTraders.Api.Carts
+dotnet user-secrets set "KeyVaultEndpoint" "$KV_ENDPOINT"
+dotnet build && dotnet run
 
 cd src/ContosoTraders.UI.Website/
 npm install
