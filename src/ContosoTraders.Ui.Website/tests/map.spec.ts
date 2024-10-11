@@ -17,7 +17,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Map', () => {
-  test.skip(({ browserName }) => browserName === 'chromium', 'Chromium only!');
+  test.skip(({ browserName }) => browserName === 'chromium', 'Skip Chromium!');
   test('should display bing maps iframe', async ({ page, geolocation }) => {
     await expect.poll(() => page.locator('input#latitude').inputValue()).toEqual(geolocation?.latitude.toString());
     await expect.poll(() => page.locator('input#longitude').inputValue()).toEqual(geolocation?.longitude.toString());
