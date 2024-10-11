@@ -2,9 +2,9 @@ name: Provision and Test Contoso Traders
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches: ["main"]
-  #   paths-ignore: ["docs/**", "demo-scripts/**"]
+  push:
+    branches: ["main"]
+    paths-ignore: ["docs/**", "demo-scripts/**"]
 
 env:
   ACR_NAME: acrcontosotraders # Checked
