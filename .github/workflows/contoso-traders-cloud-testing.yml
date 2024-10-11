@@ -726,8 +726,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: npm
-          cache-dependency-path: src/ContosoTraders.Ui.Website/package-lock.json
+          # cache: npm
+          # cache-dependency-path: src/ContosoTraders.Ui.Website/package-lock.json
       - name: Set env variables for testing endpoints
         run: |
           echo "REACT_APP_APIURLSHOPPINGCART"="https://${{ needs.deploy-carts-api.outputs.cartsApiEndpoint }}/v1" >> $GITHUB_ENV
