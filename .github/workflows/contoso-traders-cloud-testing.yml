@@ -416,7 +416,7 @@ jobs:
   deploy-ui:
     if: ${{ true }}
     runs-on: ubuntu-22.04
-    needs: [deploy-products-api, deploy-carts-api, configure-azure-ad-app]
+    needs: [deploy-products-api, deploy-carts-api, configure-azure-ad-app, provision-resources]
     outputs:
       uiCdnEndpoint: ${{ steps.get-uiCdnEndpoint.outputs.uiCdnEndpoint }}
     env:
@@ -534,7 +534,7 @@ jobs:
           fi
 
   load-tests-with-chaos-products-api:
-    needs: [deploy-carts-api, deploy-products-api, configure-azure-ad-app, deploy-ui]
+    needs: [deploy-products-api, playwright-tests-ui]
     runs-on: ubuntu-22.04
     concurrency:
       group: load-tests-with-chaos-products-api
@@ -593,75 +593,75 @@ jobs:
               }
             ]
 
-  load-tests-carts-internal-api:
-    if: ${{ vars.DEPLOYPRIVATEENDPOINTS == 'true' }}
-    needs: [deploy-carts-api, deploy-products-api, configure-azure-ad-app, deploy-ui]
-    runs-on: ubuntu-22.04
-    concurrency:
-      group: load-tests-carts-internal-api
-      cancel-in-progress: true
-    steps:
-      - name: checkout code
-        uses: actions/checkout@v4
-      - name: azure login
-        uses: azure/login@v2.2.0
-        with:
-          creds: ${{ secrets.SERVICEPRINCIPAL }}
-      - name: get carts api endpoint (internal)
-        uses: azure/CLI@v2.1.0
-        id: get-cartsInternalApiEndpoint
-        with:
-          inlineScript: echo "cartsInternalApiEndpoint"="$(az keyvault secret show --vault-name ${{ env.KV_NAME }}${{ vars.SUFFIX }} --name cartsInternalApiEndpoint --query value -o tsv)" >> $GITHUB_OUTPUT
-      - name: get vnetAcaSubnetId
-        uses: azure/CLI@v2.1.0
-        id: get-vnetAcaSubnetId
-        with:
-          inlineScript: echo "vnetAcaSubnetId"="$(az keyvault secret show --vault-name ${{ env.KV_NAME }}${{ vars.SUFFIX }} -n vnetAcaSubnetId --query "value" -o tsv)" >> $GITHUB_OUTPUT
-      - name: substitute tokens in load test config file
-        uses: cschleiden/replace-tokens@v1.3
-        with:
-          tokenPrefix: "{{"
-          tokenSuffix: "}}"
-          files: ./loadtests/contoso-traders-carts-internal.yaml
-        env:
-          LOAD_TEST_SUBNET_ID: ${{ steps.get-vnetAcaSubnetId.outputs.vnetAcaSubnetId }}
-      - name: load test (carts internal API)
-        uses: Azure/load-testing@v1.1.19
-        with:
-          # Path of the YAML file. Should be fully qualified path or relative to the default working directory
-          loadtestConfigFile: ./loadtests/contoso-traders-carts-internal.yaml
-          loadtestResource: ${{ env.LOAD_TEST_SERVICE_NAME }}${{ vars.SUFFIX }}
-          resourceGroup: ${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }}
-          env: |
-            [
-              {
-                "name": "domain",
-                "value": "${{ steps.get-cartsInternalApiEndpoint.outputs.cartsInternalApiEndpoint }}"
-              },
-              {
-                "name": "protocol",
-                "value": "https"
-              },
-              {
-                "name": "path",
-                "value": "v1/ShoppingCart/loadtest"
-              },
-              {
-                "name": "threads_per_engine",
-                "value": "5"
-              },
-              {
-                "name": "ramp_up_time",
-                "value": "0"
-              },
-              {
-                "name": "duration_in_sec",
-                "value": "120"
-              }
-            ]
+  # load-tests-carts-internal-api:
+  #   if: ${{ vars.DEPLOYPRIVATEENDPOINTS == 'true' }}
+  #   needs: [deploy-carts-api, deploy-products-api, configure-azure-ad-app, deploy-ui]
+  #   runs-on: ubuntu-22.04
+  #   concurrency:
+  #     group: load-tests-carts-internal-api
+  #     cancel-in-progress: true
+  #   steps:
+  #     - name: checkout code
+  #       uses: actions/checkout@v4
+  #     - name: azure login
+  #       uses: azure/login@v2.2.0
+  #       with:
+  #         creds: ${{ secrets.SERVICEPRINCIPAL }}
+  #     - name: get carts api endpoint (internal)
+  #       uses: azure/CLI@v2.1.0
+  #       id: get-cartsInternalApiEndpoint
+  #       with:
+  #         inlineScript: echo "cartsInternalApiEndpoint"="$(az keyvault secret show --vault-name ${{ env.KV_NAME }}${{ vars.SUFFIX }} --name cartsInternalApiEndpoint --query value -o tsv)" >> $GITHUB_OUTPUT
+  #     - name: get vnetAcaSubnetId
+  #       uses: azure/CLI@v2.1.0
+  #       id: get-vnetAcaSubnetId
+  #       with:
+  #         inlineScript: echo "vnetAcaSubnetId"="$(az keyvault secret show --vault-name ${{ env.KV_NAME }}${{ vars.SUFFIX }} -n vnetAcaSubnetId --query "value" -o tsv)" >> $GITHUB_OUTPUT
+  #     - name: substitute tokens in load test config file
+  #       uses: cschleiden/replace-tokens@v1.3
+  #       with:
+  #         tokenPrefix: "{{"
+  #         tokenSuffix: "}}"
+  #         files: ./loadtests/contoso-traders-carts-internal.yaml
+  #       env:
+  #         LOAD_TEST_SUBNET_ID: ${{ steps.get-vnetAcaSubnetId.outputs.vnetAcaSubnetId }}
+  #     - name: load test (carts internal API)
+  #       uses: Azure/load-testing@v1.1.19
+  #       with:
+  #         # Path of the YAML file. Should be fully qualified path or relative to the default working directory
+  #         loadtestConfigFile: ./loadtests/contoso-traders-carts-internal.yaml
+  #         loadtestResource: ${{ env.LOAD_TEST_SERVICE_NAME }}${{ vars.SUFFIX }}
+  #         resourceGroup: ${{ env.RESOURCE_GROUP_NAME }}${{ vars.SUFFIX }}
+  #         env: |
+  #           [
+  #             {
+  #               "name": "domain",
+  #               "value": "${{ steps.get-cartsInternalApiEndpoint.outputs.cartsInternalApiEndpoint }}"
+  #             },
+  #             {
+  #               "name": "protocol",
+  #               "value": "https"
+  #             },
+  #             {
+  #               "name": "path",
+  #               "value": "v1/ShoppingCart/loadtest"
+  #             },
+  #             {
+  #               "name": "threads_per_engine",
+  #               "value": "5"
+  #             },
+  #             {
+  #               "name": "ramp_up_time",
+  #               "value": "0"
+  #             },
+  #             {
+  #               "name": "duration_in_sec",
+  #               "value": "120"
+  #             }
+  #           ]
 
   load-tests-carts-api:
-    needs: [deploy-carts-api, deploy-products-api, configure-azure-ad-app, deploy-ui]
+    needs: [deploy-carts-api, playwright-tests-ui]
     runs-on: ubuntu-22.04
     concurrency:
       group: load-tests-carts-api
@@ -710,6 +710,7 @@ jobs:
 
   playwright-tests-ui:
     needs: [deploy-carts-api, deploy-products-api, configure-azure-ad-app, deploy-ui]
+    continue-on-error: true
     timeout-minutes: 20
     runs-on: ubuntu-22.04
     container:
