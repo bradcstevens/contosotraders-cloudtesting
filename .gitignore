@@ -5,6 +5,7 @@
 auth.json
 .cleanup.sh
 .setup.sh
+.spn
 
 # User-specific files
 *.suo
