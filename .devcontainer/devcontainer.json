@@ -1,6 +1,6 @@
 {
 	"name": "Playwright",
-	"image": "mcr.microsoft.com/playwright:v1.43.1-jammy",
+	"image": "mcr.microsoft.com/playwright:v1.48.0-jammy",
 	"features": {
 		"ghcr.io/devcontainers/features/azure-cli:1": {},
 		"ghcr.io/devcontainers/features/node:1": {

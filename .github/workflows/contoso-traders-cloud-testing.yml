@@ -439,7 +439,7 @@ jobs:
         run: echo "REACT_APP_B2CCLIENTID"="${{ needs.configure-azure-ad-app.outputs.azureAdAppClientId }}" >> $GITHUB_ENV
       - uses: actions/setup-node@v4.0.4
         with:
-          node-version: 18
+          node-version: 20
           cache: npm
           cache-dependency-path: src/ContosoTraders.Ui.Website/package-lock.json
       - name: npm ci
@@ -559,7 +559,7 @@ jobs:
         run: sleep 30s
         shell: bash
       - name: load test (products API)
-        uses: Azure/load-testing@v1.1.19
+        uses: Azure/load-testing@v1.1.24
         with:
           # Path of the YAML file. Should be fully qualified path or relative to the default working directory
           loadtestConfigFile: ./loadtests/contoso-traders-products.yaml
@@ -626,7 +626,7 @@ jobs:
   #       env:
   #         LOAD_TEST_SUBNET_ID: ${{ steps.get-vnetAcaSubnetId.outputs.vnetAcaSubnetId }}
   #     - name: load test (carts internal API)
-  #       uses: Azure/load-testing@v1.1.19
+  #       uses: Azure/load-testing@v1.1.24
   #       with:
   #         # Path of the YAML file. Should be fully qualified path or relative to the default working directory
   #         loadtestConfigFile: ./loadtests/contoso-traders-carts-internal.yaml
@@ -674,7 +674,7 @@ jobs:
         with:
           creds: ${{ secrets.SERVICEPRINCIPAL }}
       - name: load test (carts API)
-        uses: Azure/load-testing@v1.1.19
+        uses: Azure/load-testing@v1.1.24
         with:
           # Path of the YAML file. Should be fully qualified path or relative to the default working directory
           loadtestConfigFile: ./loadtests/contoso-traders-carts.yaml
@@ -714,7 +714,7 @@ jobs:
     timeout-minutes: 20
     runs-on: ubuntu-22.04
     container:
-      image: mcr.microsoft.com/playwright:v1.43.1-jammy
+      image: mcr.microsoft.com/playwright:1.48.0-jammy
     defaults:
       run:
         working-directory: src/ContosoTraders.Ui.Website
@@ -725,7 +725,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           # cache: npm
           # cache-dependency-path: src/ContosoTraders.Ui.Website/package-lock.json
       - name: Set env variables for testing endpoints
