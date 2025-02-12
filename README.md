@@ -1,4 +1,4 @@
-## Contoso Traders - Cloud testing tools demo app
+# Contoso Traders - Cloud testing tools demo app
 
 The Contoso Traders app is a sample application showcasing [Playwright](https://playwright.dev), [Azure Load Testing](https://aka.ms/malt-docs), [Azure Chaos Studio](https://aka.ms/CHAOS-docs) and more.
 
